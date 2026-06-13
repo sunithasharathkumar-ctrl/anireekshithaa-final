@@ -646,7 +646,7 @@ function closeAdminPasscode() {
 function submitAdminPasskey() {
     const keyInput = document.getElementById('adminPasskey').value;
 
-    if (keyInput === 'admin123') {
+    if (keyInput === 'cinema2026') {
         closeAdminPasscode();
         openAdminDashboard();
     } else {
