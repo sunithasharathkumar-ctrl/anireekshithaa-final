@@ -277,6 +277,19 @@ function submitDetailsForm() {
     const reviewPhoneElem = document.getElementById('reviewCustomerPhone');
     if (reviewPhoneElem) reviewPhoneElem.textContent = `+91 ${phone}`;
 
+    // Toggle payment buttons based on iOS vs other devices (Android/Desktop)
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const iosContainer = document.getElementById('iosUpiAppsContainer');
+    const defaultPayBtn = document.getElementById('defaultUpiPayBtn');
+    
+    if (isIOS) {
+        if (iosContainer) iosContainer.style.display = 'flex';
+        if (defaultPayBtn) defaultPayBtn.style.display = 'none';
+    } else {
+        if (iosContainer) iosContainer.style.display = 'none';
+        if (defaultPayBtn) defaultPayBtn.style.display = 'inline-flex';
+    }
+
     // Go to step 3 (Payment)
     goToStep(3);
 }
@@ -317,11 +330,80 @@ async function submitUpiBooking() {
 
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
 
-    // Check if on a mobile device and open UPI intent deep link directly
-    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    // Direct redirect is restricted to Android devices to avoid iOS WhatsApp hijacking
+    if (/Android/i.test(navigator.userAgent)) {
         const upiId = '9986048332@ybl';
         const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
         window.location.href = upiDeepLink;
+    }
+
+    // Fill step 4 ticket elements
+    const displayBookingId = document.getElementById('displayBookingId');
+    if (displayBookingId) displayBookingId.textContent = bookingState.bookingId;
+
+    const displayCustomerName = document.getElementById('displayCustomerName');
+    if (displayCustomerName) displayCustomerName.textContent = bookingState.attendee.name;
+
+    const displayCustomerPhone = document.getElementById('displayCustomerPhone');
+    if (displayCustomerPhone) displayCustomerPhone.textContent = `+91 ${bookingState.attendee.phone}`;
+
+    const displayTicketsCount = document.getElementById('displayTicketsCount');
+    if (displayTicketsCount) displayTicketsCount.textContent = `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`;
+
+    const displayAmountPaid = document.getElementById('displayAmountPaid');
+    if (displayAmountPaid) displayAmountPaid.textContent = `₹${totalAmount.toFixed(2)}`;
+
+    const displayBookingStatus = document.getElementById('displayBookingStatus');
+    if (displayBookingStatus) {
+        displayBookingStatus.textContent = 'Pending Verification';
+        displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
+        displayBookingStatus.style.color = '#f1c40f';
+    }
+
+    // Configure the WhatsApp screenshot upload button
+    const sendScreenshotBtn = document.getElementById('sendScreenshotBtn');
+    if (sendScreenshotBtn) {
+        const textMsg = `Hi, I have completed the payment of ₹${totalAmount.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
+        const encodedText = encodeURIComponent(textMsg);
+        sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
+    }
+
+    // Move to confirmation panel (Step 4)
+    goToStep(4);
+}
+
+async function submitIosUpiBooking(appName) {
+    // Generate Random Booking ID
+    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
+    const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like I, O
+    const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
+    bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
+    
+    // Set status to Pending Verification and record transaction details
+    bookingState.paidStatus = 'Pending Verification';
+    bookingState.transactionId = '-';
+    bookingState.confirmed = false;
+
+    // Save booking to Database (Supabase + LocalStorage)
+    await saveBookingToDatabase();
+
+    const totalAmount = bookingState.tickets * bookingState.ticketPrice;
+    const upiId = '9986048332@ybl';
+
+    // Map apps to custom iOS schemes
+    let deepLink = '';
+    if (appName === 'phonepe') {
+        deepLink = `phonepe://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+    } else if (appName === 'gpay') {
+        deepLink = `gpay://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+    } else if (appName === 'paytm') {
+        deepLink = `paytmmp://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+    } else if (appName === 'bhim') {
+        deepLink = `bhim://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+    }
+
+    if (deepLink) {
+        window.location.href = deepLink;
     }
 
     // Fill step 4 ticket elements
