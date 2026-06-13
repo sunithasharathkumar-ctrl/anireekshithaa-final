@@ -538,42 +538,6 @@ function loadSampleData() {
 /* ==========================================================================
    WHATSAPP INTEGRATION & MOCK NOTIFICATIONS
    ========================================================================== */
-function triggerWhatsAppLink() {
-    const { name, phone } = bookingState.attendee;
-    const { bookingId, tickets } = bookingState;
-
-    // Compose ticket details
-    const textMsg = `Hi *${name}*, your booking for the psychological thriller *ANIREEKSHITHAA* (The Unexpected) is *CONFIRMED*! 🎬🍿\n\n` +
-        `🎫 *TICKET SLIP*:\n` +
-        `• *Booking ID*: ${bookingId}\n` +
-        `• *Seats*: ${tickets} Ticket${tickets > 1 ? 's' : ''}\n` +
-        `• *Venue*: Chamundeshwari Studios, Bangalore\n` +
-        `• *Date*: Saturday, July 4, 2026\n` +
-        `• *Time*: 5:00 PM\n\n` +
-        `Please display this Booking ID at the counter to retrieve your physical passes. See you at the movies! 🎥`;
-
-    const encodedText = encodeURIComponent(textMsg);
-    // WhatsApp Send API Link
-    const waUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${encodedText}`;
-
-    // Redirect or open in new window depending on client context
-    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-        window.location.href = waUrl;
-    } else {
-        window.open(waUrl, '_blank');
-    }
-
-    // Show mock WhatsApp dialog in-page for demonstration feedback
-    const messagePopup = document.getElementById('mockWhatsappPopup');
-    const textContent = document.getElementById('waMessageText');
-
-    if (textContent) {
-        textContent.innerHTML = textMsg.replace(/\n/g, '<br>').replace(/\*(.*?)\*/g, '<strong>$1</strong>');
-    }
-    if (messagePopup) {
-        messagePopup.style.display = 'block';
-    }
-}
 
 function closeWhatsappPopup() {
     const mockWhatsappPopup = document.getElementById('mockWhatsappPopup');
