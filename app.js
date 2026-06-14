@@ -233,8 +233,11 @@ function submitDetailsForm() {
     const phone = document.getElementById('bookingPhone').value.trim();
     const email = document.getElementById('bookingEmail').value.trim();
 
+    console.log('[Payment Flow] submitDetailsForm triggered. Input values:', { name, phone, email });
+
     // Basic validation
     if (!name || !phone) {
+        console.warn('[Payment Flow] Validation failed: Name or Phone missing.');
         alert('Please fill all required details.');
         return;
     }
@@ -242,6 +245,7 @@ function submitDetailsForm() {
     // Check if phone matches 10-digit regex
     const phoneRegex = /^[6789]\d{9}$/;
     if (!phoneRegex.test(phone)) {
+        console.warn('[Payment Flow] Validation failed: Phone is not a valid 10-digit Indian number:', phone);
         alert('Please enter a valid 10-digit Indian WhatsApp mobile number.');
         return;
     }
@@ -255,6 +259,8 @@ function submitDetailsForm() {
     document.getElementById('summaryReviewSubtotal').textContent = `₹${grandTotal.toFixed(2)}`;
     document.getElementById('summaryReviewTotal').textContent = `₹${grandTotal.toFixed(2)}`;
 
+    console.log('[Payment Flow] Updated Step 3 summary with tickets:', bookingState.tickets, 'total:', grandTotal);
+
     // Set dynamic UPI payment intent link for mobile
     const upiId = '9986048332@ybl';
     const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${grandTotal}&cu=INR`;
@@ -262,6 +268,7 @@ function submitDetailsForm() {
     const mobileBtn = document.getElementById('payWithUpiMobileBtn');
     if (mobileBtn) {
         mobileBtn.setAttribute('href', upiDeepLink);
+        console.log('[Payment Flow] Set payWithUpiMobileBtn href attribute:', upiDeepLink);
     }
     
     // Set dynamic QR code image URL
@@ -269,6 +276,7 @@ function submitDetailsForm() {
     if (qrImg) {
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiDeepLink)}`;
         qrImg.setAttribute('src', qrUrl);
+        console.log('[Payment Flow] Generated QR Code URL:', qrUrl);
     }
 
     const reviewNameElem = document.getElementById('reviewCustomerName');
@@ -282,12 +290,16 @@ function submitDetailsForm() {
     const iosContainer = document.getElementById('iosUpiAppsContainer');
     const defaultPayBtn = document.getElementById('defaultUpiPayBtn');
     
+    console.log('[Payment Flow] Device detection - isIOS:', isIOS, 'userAgent:', navigator.userAgent);
+    
     if (isIOS) {
         if (iosContainer) iosContainer.style.display = 'flex';
         if (defaultPayBtn) defaultPayBtn.style.display = 'none';
+        console.log('[Payment Flow] Displaying iOS custom apps container and hiding default Proceed button.');
     } else {
         if (iosContainer) iosContainer.style.display = 'none';
         if (defaultPayBtn) defaultPayBtn.style.display = 'inline-flex';
+        console.log('[Payment Flow] Displaying default Proceed button and hiding iOS container.');
     }
 
     // Go to step 3 (Payment)
@@ -314,19 +326,25 @@ function copyUpiId() {
 }
 
 async function submitUpiBooking() {
+    console.log('[Payment Flow] submitUpiBooking triggered. BookingState:', bookingState);
+
     // Generate Random Booking ID
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
     const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like I, O
     const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
     bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
     
+    console.log('[Payment Flow] Generated Booking ID:', bookingState.bookingId);
+
     // Set status to Pending Verification and record transaction details
     bookingState.paidStatus = 'Pending Verification';
     bookingState.transactionId = '-';
     bookingState.confirmed = false;
 
     // Save booking to Database (Supabase + LocalStorage)
+    console.log('[Payment Flow] Saving booking to database...');
     await saveBookingToDatabase();
+    console.log('[Payment Flow] Database save operation complete.');
 
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
 
@@ -334,7 +352,10 @@ async function submitUpiBooking() {
     if (/Android/i.test(navigator.userAgent)) {
         const upiId = '9986048332@ybl';
         const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        console.log('[Payment Flow] Detected Android user agent. Triggering redirect to universal UPI link:', upiDeepLink);
         window.location.href = upiDeepLink;
+    } else {
+        console.log('[Payment Flow] User agent is not Android. Skipping automatic deep-link launch.');
     }
 
     // Fill step 4 ticket elements
@@ -366,26 +387,34 @@ async function submitUpiBooking() {
         const textMsg = `Hi, I have completed the payment of ₹${totalAmount.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
         const encodedText = encodeURIComponent(textMsg);
         sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
+        console.log('[Payment Flow] Configured screenshot upload link:', sendScreenshotBtn.getAttribute('href'));
     }
 
     // Move to confirmation panel (Step 4)
+    console.log('[Payment Flow] Transitioning UI to Step 4 (Verification).');
     goToStep(4);
 }
 
 async function submitIosUpiBooking(appName) {
+    console.log('[Payment Flow] submitIosUpiBooking triggered. AppName:', appName, 'BookingState:', bookingState);
+
     // Generate Random Booking ID
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
     const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like I, O
     const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
     bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
     
+    console.log('[Payment Flow] Generated iOS Booking ID:', bookingState.bookingId);
+
     // Set status to Pending Verification and record transaction details
     bookingState.paidStatus = 'Pending Verification';
     bookingState.transactionId = '-';
     bookingState.confirmed = false;
 
     // Save booking to Database (Supabase + LocalStorage)
+    console.log('[Payment Flow] Saving iOS booking to database...');
     await saveBookingToDatabase();
+    console.log('[Payment Flow] iOS Database save complete.');
 
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
     const upiId = '9986048332@ybl';
@@ -400,10 +429,15 @@ async function submitIosUpiBooking(appName) {
         deepLink = `paytmmp://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'bhim') {
         deepLink = `bhim://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+    } else if (appName === 'generic') {
+        deepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     }
 
     if (deepLink) {
+        console.log('[Payment Flow] Redirecting iOS browser via custom scheme:', deepLink);
         window.location.href = deepLink;
+    } else {
+        console.warn('[Payment Flow] No custom deepLink scheme matches the app name:', appName);
     }
 
     // Fill step 4 ticket elements
@@ -435,9 +469,11 @@ async function submitIosUpiBooking(appName) {
         const textMsg = `Hi, I have completed the payment of ₹${totalAmount.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
         const encodedText = encodeURIComponent(textMsg);
         sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
+        console.log('[Payment Flow] Configured screenshot upload link:', sendScreenshotBtn.getAttribute('href'));
     }
 
     // Move to confirmation panel (Step 4)
+    console.log('[Payment Flow] Transitioning UI to Step 4 (Verification).');
     goToStep(4);
 }
 
