@@ -333,7 +333,7 @@ async function submitUpiBooking() {
     // Direct redirect is restricted to Android devices to avoid iOS WhatsApp hijacking
     if (/Android/i.test(navigator.userAgent)) {
         const upiId = '9986048332@ybl';
-        const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+        const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
         window.location.href = upiDeepLink;
     }
 
@@ -393,13 +393,13 @@ async function submitIosUpiBooking(appName) {
     // Map apps to custom iOS schemes
     let deepLink = '';
     if (appName === 'phonepe') {
-        deepLink = `phonepe://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+        deepLink = `phonepe://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'gpay') {
-        deepLink = `gpay://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+        deepLink = `gpay://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'paytm') {
-        deepLink = `paytmmp://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+        deepLink = `paytmmp://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'bhim') {
-        deepLink = `bhim://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${totalAmount}&cu=INR`;
+        deepLink = `bhim://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     }
 
     if (deepLink) {
