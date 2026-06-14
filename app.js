@@ -326,7 +326,7 @@ function copyUpiId() {
 }
 
 async function submitUpiBooking() {
-    console.log('[Payment Flow] submitUpiBooking triggered. BookingState:', bookingState);
+    console.log('[Payment Flow] submitUpiBooking triggered synchronously. BookingState:', bookingState);
 
     // Generate Random Booking ID
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
@@ -341,22 +341,26 @@ async function submitUpiBooking() {
     bookingState.transactionId = '-';
     bookingState.confirmed = false;
 
-    // Save booking to Database (Supabase + LocalStorage)
-    console.log('[Payment Flow] Saving booking to database...');
-    await saveBookingToDatabase();
-    console.log('[Payment Flow] Database save operation complete.');
-
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
 
-    // Direct redirect is restricted to Android devices to avoid iOS WhatsApp hijacking
+    // Direct redirect is restricted to Android devices to avoid iOS WhatsApp hijacking.
+    // Trigger deep link redirect SYNCHRONOUSLY before any async operations to preserve user gesture context.
     if (/Android/i.test(navigator.userAgent)) {
         const upiId = '9986048332@ybl';
         const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
-        console.log('[Payment Flow] Detected Android user agent. Triggering redirect to universal UPI link:', upiDeepLink);
+        console.log('[Payment Flow] Detected Android. Launching universal UPI deep link synchronously:', upiDeepLink);
         window.location.href = upiDeepLink;
     } else {
         console.log('[Payment Flow] User agent is not Android. Skipping automatic deep-link launch.');
     }
+
+    // Save booking to Database (Supabase + LocalStorage) asynchronously in background (non-blocking)
+    console.log('[Payment Flow] Initiating background database save...');
+    saveBookingToDatabase().then(() => {
+        console.log('[Payment Flow] Database save complete.');
+    }).catch(err => {
+        console.error('[Payment Flow] Database save failed:', err);
+    });
 
     // Fill step 4 ticket elements
     const displayBookingId = document.getElementById('displayBookingId');
@@ -411,34 +415,38 @@ async function submitIosUpiBooking(appName) {
     bookingState.transactionId = '-';
     bookingState.confirmed = false;
 
-    // Save booking to Database (Supabase + LocalStorage)
-    console.log('[Payment Flow] Saving iOS booking to database...');
-    await saveBookingToDatabase();
-    console.log('[Payment Flow] iOS Database save complete.');
-
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
     const upiId = '9986048332@ybl';
 
-    // Map apps to custom iOS schemes
+    // Map apps to custom iOS schemes (corrected with /upi/pay for PhonePe, Paytm, BHIM to match iOS format)
     let deepLink = '';
     if (appName === 'phonepe') {
-        deepLink = `phonepe://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = `phonepe://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'gpay') {
         deepLink = `gpay://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'paytm') {
-        deepLink = `paytmmp://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = `paytm://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'bhim') {
-        deepLink = `bhim://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = `bhim://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     } else if (appName === 'generic') {
         deepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
     }
 
+    // Trigger deep link redirect SYNCHRONOUSLY before any async operations to preserve user gesture context
     if (deepLink) {
-        console.log('[Payment Flow] Redirecting iOS browser via custom scheme:', deepLink);
+        console.log('[Payment Flow] Redirecting iOS browser via custom scheme synchronously:', deepLink);
         window.location.href = deepLink;
     } else {
         console.warn('[Payment Flow] No custom deepLink scheme matches the app name:', appName);
     }
+
+    // Save booking to Database (Supabase + LocalStorage) asynchronously in background (non-blocking)
+    console.log('[Payment Flow] Saving iOS booking to database asynchronously...');
+    saveBookingToDatabase().then(() => {
+        console.log('[Payment Flow] iOS Database save complete.');
+    }).catch(err => {
+        console.error('[Payment Flow] iOS Database save failed:', err);
+    });
 
     // Fill step 4 ticket elements
     const displayBookingId = document.getElementById('displayBookingId');
