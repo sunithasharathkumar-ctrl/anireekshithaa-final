@@ -503,7 +503,7 @@ async function submitUpiBooking() {
     // Direct redirect is restricted to mobile devices to avoid desktop disruption
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (isMobile) {
-        const upiDeepLink = `upi://`;
+        const upiDeepLink = `upi://pay?pa=${upiId}`;
         console.log('[Payment Flow] Detected mobile. Launching default UPI app chooser synchronously:', upiDeepLink);
         window.location.href = upiDeepLink;
     } else {
@@ -587,18 +587,18 @@ async function submitIosUpiBooking(appName) {
 
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
 
-    // Map apps to safe custom schemes that open the home screen (never blocked by NPCI/banks)
+    // Map apps to safe custom schemes that open the payment mode directly for the payee (never blocked by NPCI/banks since amount/name is omitted)
     let deepLink = '';
     if (appName === 'phonepe') {
-        deepLink = 'phonepe://';
+        deepLink = `phonepe://upi/pay?pa=${upiId}`;
     } else if (appName === 'gpay') {
-        deepLink = 'gpay://';
+        deepLink = `gpay://upi/pay?pa=${upiId}`;
     } else if (appName === 'paytm') {
-        deepLink = 'paytm://';
+        deepLink = `paytm://upi/pay?pa=${upiId}`;
     } else if (appName === 'bhim') {
-        deepLink = 'bhim://';
+        deepLink = `bhim://upi/pay?pa=${upiId}`;
     } else if (appName === 'generic') {
-        deepLink = 'upi://';
+        deepLink = `upi://pay?pa=${upiId}`;
     }
 
     // Trigger deep link redirect SYNCHRONOUSLY before any async operations to preserve user gesture context
