@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anireekshithaa - The Unexpected | Psychological Thriller Short Film</title>
-    <meta name="description" content="Official promotion and ticketing site for Anireekshithaa, a psychological thriller short film. Watch the teaser, meet the crew, and book your premiere tickets.">
+    <title>Anireekshithaa - The Unexpected | Psychological Thriller Film</title>
+    <meta name="description" content="Official promotion and ticketing site for Anireekshithaa, a psychological thriller film. Watch the teaser, meet the crew, and book your premiere tickets.">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -134,7 +134,7 @@
                         
                         <div class="synopsis-paragraphs">
                             <p class="lead-paragraph">
-                                <strong class="red-gradient-text font-cinzel">ANIREEKSHITHAA</strong> is a short film about the unexpected twists life throws at us. Moments that seem frustrating, suffocating, or unfair at first often reveal their true meaning with time.
+                                <strong class="red-gradient-text font-cinzel">ANIREEKSHITHAA</strong> is a film about the unexpected twists life throws at us. Moments that seem frustrating, suffocating, or unfair at first often reveal their true meaning with time.
                             </p>
                             <p>
                                 Through the journey of <strong>Tejas</strong>, the film explores how life's unplanned events shape us in ways we never anticipate. As he navigates a series of unforeseen situations, he gradually realizes that every setback, encounter, and coincidence has a purpose.
@@ -490,6 +490,27 @@
                     <button class="qty-btn" onclick="adjustTickets(1)"><i class="fa-solid fa-plus"></i></button>
                 </div>
 
+                <!-- Showtime Selection Section -->
+                <div class="showtime-picker-section" style="margin: 20px 0; text-align: left;">
+                    <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Select Show Time:</span>
+                    <div class="showtime-options" style="display: flex; gap: 12px; width: 100%;">
+                        <label style="flex: 1; cursor: pointer; position: relative;">
+                            <input type="radio" name="showTimeSelect" value="5:00 PM" checked style="position: absolute; opacity: 0; pointer-events: none;" onchange="selectShowTime('5:00 PM')">
+                            <div id="showTimeCard-500" style="background: rgba(217, 35, 42, 0.08); border: 1px solid var(--red); padding: 12px; border-radius: 6px; text-align: center; transition: all 0.2s ease;">
+                                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-white);">5:00 PM</div>
+                                <div style="font-size: 0.70rem; color: var(--red-bright); font-weight: 600; margin-top: 4px;" id="seatsLeft-500">Checking seats...</div>
+                            </div>
+                        </label>
+                        <label style="flex: 1; cursor: pointer; position: relative;">
+                            <input type="radio" name="showTimeSelect" value="6:30 PM" style="position: absolute; opacity: 0; pointer-events: none;" onchange="selectShowTime('6:30 PM')">
+                            <div id="showTimeCard-630" style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); padding: 12px; border-radius: 6px; text-align: center; transition: all 0.2s ease;">
+                                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-white);">6:30 PM</div>
+                                <div style="font-size: 0.70rem; color: var(--text-muted); font-weight: 600; margin-top: 4px;" id="seatsLeft-630">Checking seats...</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="booking-summary-box">
                     <div class="summary-row">
                         <span>Price per Ticket</span>
@@ -559,7 +580,7 @@
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; font-size: 0.85rem; color: var(--text-light);">
                             <div>
                                 <small style="display: block; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px;">DATE & TIME</small>
-                                <strong style="color: var(--text-white);">Sat, July 4, 2026 at 5:00 PM</strong>
+                                <strong style="color: var(--text-white);" id="reviewDateTime">Sat, July 4, 2026 at 5:00 PM</strong>
                             </div>
                             <div>
                                 <small style="display: block; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px;">VENUE</small>
@@ -662,6 +683,12 @@
                     </p>
                 </div>
 
+                <!-- Copied UPI ID Instruction Banner for Mobile Users -->
+                <div class="payment-instructions-alert" style="background: rgba(241, 196, 15, 0.08); border: 1px dashed rgba(241, 196, 15, 0.3); padding: 14px; border-radius: 6px; color: #f1c40f; font-size: 0.85rem; margin-bottom: 20px; text-align: left; line-height: 1.5; display: none;" id="mobilePaymentInstructionAlert">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 6px; font-size: 1rem; color: #f1c40f;"></i>
+                    <span>UPI ID <strong style="color: white; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-family: monospace;">9986048332@ybl</strong> has been copied to your clipboard. If your payment app did not open, please open your UPI app (PhonePe, Google Pay, etc.), paste the ID (or type mobile **9986048332**), type the exact amount, and pay. Once completed, please upload the screenshot below!</span>
+                </div>
+
                 <!-- Booking Details Summary Card -->
                 <div class="booking-details-summary-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 20px; text-align: left; margin: 20px 0;">
                     <h4 style="color: var(--text-white); font-size: 1rem; margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Request Summary</h4>
@@ -677,6 +704,10 @@
                         <div style="display: flex; justify-content: space-between;">
                             <span>Mobile Number:</span>
                             <strong style="color: var(--text-white);" id="displayCustomerPhone">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Show Time:</span>
+                            <strong style="color: var(--text-white);" id="displayShowTime">-</strong>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                             <span>Number of Tickets:</span>
@@ -792,6 +823,7 @@
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
+                                <th>Show Time</th>
                                 <th>Tickets</th>
                                 <th>Amount</th>
                                 <th>Date & Time</th>
@@ -835,6 +867,7 @@
                                 <th>Name</th>
                                 <th>Phone</th>
                                 <th>Email</th>
+                                <th>Show Time</th>
                                 <th>Tickets</th>
                                 <th>Paid</th>
                                 <th>Date</th>

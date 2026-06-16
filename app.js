@@ -160,6 +160,7 @@ function openBookingModal() {
         step: 1,
         tickets: 1,
         ticketPrice: 99,
+        showTime: '5:00 PM', // Default showtime
         attendee: { name: '', phone: '', email: '' },
         bookingId: '',
         confirmed: false,
@@ -177,6 +178,14 @@ function openBookingModal() {
     // Reset UI pricing displays
     document.getElementById('ticketQty').textContent = '1';
     document.getElementById('summaryTotal').textContent = '₹99.00';
+
+    // Reset showtime radio selections to 5:00 PM
+    const showTime500Radio = document.querySelector('input[name="showTimeSelect"][value="5:00 PM"]');
+    if (showTime500Radio) showTime500Radio.checked = true;
+    selectShowTime('5:00 PM');
+
+    // Refresh live show capacities
+    refreshShowCapacities();
 
     updateStepUI();
     document.getElementById('bookingModal').classList.add('active');
@@ -198,7 +207,117 @@ function adjustTickets(amount) {
     }
 }
 
+function selectShowTime(time) {
+    bookingState.showTime = time;
+    console.log('[Showtime] Selected show time:', time);
+
+    const card500 = document.getElementById('showTimeCard-500');
+    const card630 = document.getElementById('showTimeCard-630');
+
+    if (time === '5:00 PM') {
+        if (card500) {
+            card500.style.border = '1px solid var(--red)';
+            card500.style.background = 'rgba(217, 35, 42, 0.08)';
+        }
+        if (card630) {
+            card630.style.border = '1px solid var(--border-glass)';
+            card630.style.background = 'rgba(255, 255, 255, 0.01)';
+        }
+    } else {
+        if (card500) {
+            card500.style.border = '1px solid var(--border-glass)';
+            card500.style.background = 'rgba(255, 255, 255, 0.01)';
+        }
+        if (card630) {
+            card630.style.border = '1px solid var(--red)';
+            card630.style.background = 'rgba(217, 35, 42, 0.08)';
+        }
+    }
+}
+
+async function refreshShowCapacities() {
+    console.log('[Showtime] Fetching latest capacities from Supabase...');
+    try {
+        const bookings = await getBookingsFromSupabase();
+        
+        let booked500 = 0;
+        let booked630 = 0;
+
+        bookings.forEach(b => {
+            if (b.paidStatus === 'Rejected') return;
+
+            let showTime = '5:00 PM';
+            if (b.category && b.category.includes(' | ')) {
+                const parts = b.category.split(' | ');
+                if (parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+                    showTime = parts[0];
+                }
+            }
+
+            if (showTime === '5:00 PM') {
+                booked500 += b.tickets;
+            } else if (showTime === '6:30 PM') {
+                booked630 += b.tickets;
+            }
+        });
+
+        const maxSeats = 150;
+        const remaining500 = Math.max(0, maxSeats - booked500);
+        const remaining630 = Math.max(0, maxSeats - booked630);
+
+        console.log(`[Showtime] Live stats - 5:00 PM: ${booked500} booked, ${remaining500} left. 6:30 PM: ${booked630} booked, ${remaining630} left.`);
+
+        const seatsText500 = document.getElementById('seatsLeft-500');
+        const seatsText630 = document.getElementById('seatsLeft-630');
+
+        if (seatsText500) {
+            if (remaining500 <= 0) {
+                seatsText500.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
+                document.getElementById('showTimeCard-500').style.opacity = '0.6';
+            } else {
+                seatsText500.textContent = `${remaining500} seats left`;
+                document.getElementById('showTimeCard-500').style.opacity = '1';
+            }
+        }
+
+        if (seatsText630) {
+            if (remaining630 <= 0) {
+                seatsText630.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
+                document.getElementById('showTimeCard-630').style.opacity = '0.6';
+            } else {
+                seatsText630.textContent = `${remaining630} seats left`;
+                document.getElementById('showTimeCard-630').style.opacity = '1';
+            }
+        }
+    } catch (err) {
+        console.error('[Showtime] Error refreshing capacities:', err);
+    }
+}
+
 function goToStep(stepNumber) {
+    if (stepNumber === 2 && bookingState.step === 1) {
+        // Validate showtime remaining seats before proceeding
+        const selectedShow = bookingState.showTime || '5:00 PM';
+        const qty = bookingState.tickets;
+
+        const seatsText = selectedShow === '5:00 PM' ? document.getElementById('seatsLeft-500') : document.getElementById('seatsLeft-630');
+        if (seatsText) {
+            const text = seatsText.textContent.toLowerCase();
+            if (text.includes('housefull')) {
+                alert(`The ${selectedShow} show is currently housefull. Please choose the other showtime.`);
+                return;
+            }
+            const match = text.match(/(\d+)\s+seats?\s+left/);
+            if (match) {
+                const remaining = parseInt(match[1]);
+                if (qty > remaining) {
+                    alert(`Only ${remaining} seats are available for the ${selectedShow} show. Please select a maximum of ${remaining} tickets or choose the other showtime.`);
+                    return;
+                }
+            }
+        }
+    }
+
     bookingState.step = stepNumber;
     updateStepUI();
 }
@@ -259,7 +378,12 @@ function submitDetailsForm() {
     document.getElementById('summaryReviewSubtotal').textContent = `₹${grandTotal.toFixed(2)}`;
     document.getElementById('summaryReviewTotal').textContent = `₹${grandTotal.toFixed(2)}`;
 
-    console.log('[Payment Flow] Updated Step 3 summary with tickets:', bookingState.tickets, 'total:', grandTotal);
+    const reviewDateTimeElem = document.getElementById('reviewDateTime');
+    if (reviewDateTimeElem) {
+        reviewDateTimeElem.textContent = `Sat, July 4, 2026 at ${bookingState.showTime || '5:00 PM'}`;
+    }
+
+    console.log('[Payment Flow] Updated Step 3 summary with tickets:', bookingState.tickets, 'total:', grandTotal, 'showTime:', bookingState.showTime);
 
     // Set dynamic UPI payment intent link for mobile
     const upiId = '9986048332@ybl';
@@ -285,30 +409,58 @@ function submitDetailsForm() {
     const reviewPhoneElem = document.getElementById('reviewCustomerPhone');
     if (reviewPhoneElem) reviewPhoneElem.textContent = `+91 ${phone}`;
 
-    // Toggle payment buttons based on iOS vs other devices (Android/Desktop)
-    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // Toggle payment buttons based on Mobile vs Desktop
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const iosContainer = document.getElementById('iosUpiAppsContainer');
     const defaultPayBtn = document.getElementById('defaultUpiPayBtn');
     
-    console.log('[Payment Flow] Device detection - isIOS:', isIOS, 'userAgent:', navigator.userAgent);
+    console.log('[Payment Flow] Device detection - isMobile:', isMobile, 'userAgent:', navigator.userAgent);
     
-    if (isIOS) {
+    if (isMobile) {
         if (iosContainer) iosContainer.style.display = 'flex';
         if (defaultPayBtn) defaultPayBtn.style.display = 'none';
-        console.log('[Payment Flow] Displaying iOS custom apps container and hiding default Proceed button.');
+        console.log('[Payment Flow] Displaying mobile custom apps container and hiding default Proceed button.');
     } else {
         if (iosContainer) iosContainer.style.display = 'none';
         if (defaultPayBtn) defaultPayBtn.style.display = 'inline-flex';
-        console.log('[Payment Flow] Displaying default Proceed button and hiding iOS container.');
+        console.log('[Payment Flow] Displaying default Proceed button and hiding mobile custom apps container.');
     }
 
     // Go to step 3 (Payment)
     goToStep(3);
 }
 
+async function copyTextToClipboard(text) {
+    try {
+        await navigator.clipboard.writeText(text);
+        console.log('[Clipboard] Copied successfully:', text);
+    } catch (err) {
+        console.warn('[Clipboard] Failed to copy using navigator.clipboard, trying fallback...', err);
+        try {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const successful = document.execCommand('copy');
+            document.body.removeChild(textArea);
+            if (successful) {
+                console.log('[Clipboard] Copied using legacy fallback.');
+            } else {
+                console.error('[Clipboard] Legacy fallback failed.');
+            }
+        } catch (fallbackErr) {
+            console.error('[Clipboard] Legacy fallback threw error:', fallbackErr);
+        }
+    }
+}
+
 function copyUpiId() {
     const upiId = '9986048332@ybl';
-    navigator.clipboard.writeText(upiId).then(() => {
+    copyTextToClipboard(upiId).then(() => {
         const btn = document.getElementById('copyUpiBtn');
         if (btn) {
             const originalHTML = btn.innerHTML;
@@ -326,7 +478,12 @@ function copyUpiId() {
 }
 
 async function submitUpiBooking() {
-    console.log('[Payment Flow] submitUpiBooking triggered synchronously. BookingState:', bookingState);
+    console.log('[Payment Flow] submitUpiBooking triggered. BookingState:', bookingState);
+
+    const upiId = '9986048332@ybl';
+    
+    // Auto-copy the UPI ID to clipboard first
+    await copyTextToClipboard(upiId);
 
     // Generate Random Booking ID
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
@@ -343,15 +500,14 @@ async function submitUpiBooking() {
 
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
 
-    // Direct redirect is restricted to Android devices to avoid iOS WhatsApp hijacking.
-    // Trigger deep link redirect SYNCHRONOUSLY before any async operations to preserve user gesture context.
-    if (/Android/i.test(navigator.userAgent)) {
-        const upiId = '9986048332@ybl';
-        const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
-        console.log('[Payment Flow] Detected Android. Launching universal UPI deep link synchronously:', upiDeepLink);
+    // Direct redirect is restricted to mobile devices to avoid desktop disruption
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (isMobile) {
+        const upiDeepLink = `upi://`;
+        console.log('[Payment Flow] Detected mobile. Launching default UPI app chooser synchronously:', upiDeepLink);
         window.location.href = upiDeepLink;
     } else {
-        console.log('[Payment Flow] User agent is not Android. Skipping automatic deep-link launch.');
+        console.log('[Payment Flow] Device is not mobile. Skipping automatic deep-link launch.');
     }
 
     // Save booking to Database (Supabase + LocalStorage) asynchronously in background (non-blocking)
@@ -378,11 +534,20 @@ async function submitUpiBooking() {
     const displayAmountPaid = document.getElementById('displayAmountPaid');
     if (displayAmountPaid) displayAmountPaid.textContent = `₹${totalAmount.toFixed(2)}`;
 
+    const displayShowTime = document.getElementById('displayShowTime');
+    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '5:00 PM';
+
     const displayBookingStatus = document.getElementById('displayBookingStatus');
     if (displayBookingStatus) {
         displayBookingStatus.textContent = 'Pending Verification';
         displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
         displayBookingStatus.style.color = '#f1c40f';
+    }
+
+    // Show alert instructions banner on mobile
+    const alertBanner = document.getElementById('mobilePaymentInstructionAlert');
+    if (alertBanner) {
+        alertBanner.style.display = isMobile ? 'block' : 'none';
     }
 
     // Configure the WhatsApp screenshot upload button
@@ -402,6 +567,11 @@ async function submitUpiBooking() {
 async function submitIosUpiBooking(appName) {
     console.log('[Payment Flow] submitIosUpiBooking triggered. AppName:', appName, 'BookingState:', bookingState);
 
+    const upiId = '9986048332@ybl';
+    
+    // Auto-copy the UPI ID to clipboard first
+    await copyTextToClipboard(upiId);
+
     // Generate Random Booking ID
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
     const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like I, O
@@ -416,36 +586,35 @@ async function submitIosUpiBooking(appName) {
     bookingState.confirmed = false;
 
     const totalAmount = bookingState.tickets * bookingState.ticketPrice;
-    const upiId = '9986048332@ybl';
 
-    // Map apps to custom iOS schemes (corrected with /upi/pay for PhonePe, Paytm, BHIM to match iOS format)
+    // Map apps to safe custom schemes that open the home screen (never blocked by NPCI/banks)
     let deepLink = '';
     if (appName === 'phonepe') {
-        deepLink = `phonepe://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = 'phonepe://';
     } else if (appName === 'gpay') {
-        deepLink = `gpay://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = 'gpay://';
     } else if (appName === 'paytm') {
-        deepLink = `paytm://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = 'paytm://';
     } else if (appName === 'bhim') {
-        deepLink = `bhim://upi/pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = 'bhim://';
     } else if (appName === 'generic') {
-        deepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA`;
+        deepLink = 'upi://';
     }
 
     // Trigger deep link redirect SYNCHRONOUSLY before any async operations to preserve user gesture context
     if (deepLink) {
-        console.log('[Payment Flow] Redirecting iOS browser via custom scheme synchronously:', deepLink);
+        console.log('[Payment Flow] Redirecting mobile browser via custom scheme synchronously:', deepLink);
         window.location.href = deepLink;
     } else {
         console.warn('[Payment Flow] No custom deepLink scheme matches the app name:', appName);
     }
 
     // Save booking to Database (Supabase + LocalStorage) asynchronously in background (non-blocking)
-    console.log('[Payment Flow] Saving iOS booking to database asynchronously...');
+    console.log('[Payment Flow] Saving mobile booking to database asynchronously...');
     saveBookingToDatabase().then(() => {
-        console.log('[Payment Flow] iOS Database save complete.');
+        console.log('[Payment Flow] Database save complete.');
     }).catch(err => {
-        console.error('[Payment Flow] iOS Database save failed:', err);
+        console.error('[Payment Flow] Database save failed:', err);
     });
 
     // Fill step 4 ticket elements
@@ -464,11 +633,20 @@ async function submitIosUpiBooking(appName) {
     const displayAmountPaid = document.getElementById('displayAmountPaid');
     if (displayAmountPaid) displayAmountPaid.textContent = `₹${totalAmount.toFixed(2)}`;
 
+    const displayShowTime = document.getElementById('displayShowTime');
+    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '5:00 PM';
+
     const displayBookingStatus = document.getElementById('displayBookingStatus');
     if (displayBookingStatus) {
         displayBookingStatus.textContent = 'Pending Verification';
         displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
         displayBookingStatus.style.color = '#f1c40f';
+    }
+
+    // Show alert instructions banner
+    const alertBanner = document.getElementById('mobilePaymentInstructionAlert');
+    if (alertBanner) {
+        alertBanner.style.display = 'block';
     }
 
     // Configure the WhatsApp screenshot upload button
@@ -553,7 +731,7 @@ async function saveBookingToDatabase() {
         name: bookingState.attendee.name,
         phone: bookingState.attendee.phone,
         profession: 'Audience',
-        category: bookingState.attendee.email || '-',
+        category: (bookingState.showTime || '5:00 PM') + ' | ' + (bookingState.attendee.email || '-'),
         transactionId: bookingState.transactionId || '-',
         tickets: bookingState.tickets,
         totalAmount: bookingState.tickets * bookingState.ticketPrice,
@@ -749,6 +927,34 @@ async function renderAdminMetrics() {
     renderTableRows(bookings);
 }
 
+function parseCategory(category) {
+    let showTime = '5:00 PM'; // Default fallback
+    let email = '-';
+    let txnId = '-';
+
+    if (category && category.includes(' | ')) {
+        const parts = category.split(' | ');
+        // The first part could be showTime if it is "5:00 PM" or "6:30 PM"
+        if (parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+            showTime = parts[0];
+            email = parts[1] || '-';
+            if (parts[2] && parts[2].startsWith('Txn: ')) {
+                txnId = parts[2].replace('Txn: ', '');
+            } else if (parts[2]) {
+                txnId = parts[2];
+            }
+        } else {
+            // Older category format which might have ' | ' or just represent email/txn
+            email = parts[0];
+            if (parts[1]) txnId = parts[1];
+        }
+    } else if (category) {
+        // Just the email
+        email = category;
+    }
+    return { showTime, email, txnId };
+}
+
 function renderPendingTableRows(pendingList) {
     const tbody = document.getElementById('adminPendingTableBody');
     const noPendingAlert = document.getElementById('noPendingDataAlert');
@@ -766,10 +972,9 @@ function renderPendingTableRows(pendingList) {
     pendingList.forEach(booking => {
         const tr = document.createElement('tr');
 
-        let emailVal = booking.category || '-';
-        if (emailVal.includes(' | ')) {
-            emailVal = emailVal.split(' | ')[0];
-        }
+        const parsed = parseCategory(booking.category);
+        const showTimeVal = parsed.showTime;
+        const emailVal = parsed.email;
 
         const statusBadge = `<span class="badge-paid pending"><i class="fa-solid fa-clock"></i> PENDING</span>`;
 
@@ -782,6 +987,7 @@ function renderPendingTableRows(pendingList) {
             <td>${escapeHtml(booking.name)}</td>
             <td>+91 ${escapeHtml(booking.phone)}</td>
             <td>${escapeHtml(emailVal)}</td>
+            <td><span class="showtime-badge" style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-glass);">${escapeHtml(showTimeVal)}</span></td>
             <td>${booking.tickets} seat${booking.tickets > 1 ? 's' : ''}</td>
             <td>₹${booking.totalAmount.toFixed(2)}</td>
             <td><small>${booking.bookingDate}</small></td>
@@ -810,11 +1016,9 @@ function renderTableRows(bookingsList) {
     bookingsList.forEach(booking => {
         const tr = document.createElement('tr');
 
-        // Extract email (which is stored in the category column, potentially with transaction ID)
-        let emailVal = booking.category || '-';
-        if (emailVal.includes(' | ')) {
-            emailVal = emailVal.split(' | ')[0];
-        }
+        const parsed = parseCategory(booking.category);
+        const showTimeVal = parsed.showTime;
+        const emailVal = parsed.email;
 
         let paidBadge = '';
         let actionBtn = '';
@@ -838,6 +1042,7 @@ function renderTableRows(bookingsList) {
             <td>${escapeHtml(booking.name)}</td>
             <td>+91 ${escapeHtml(booking.phone)}</td>
             <td>${escapeHtml(emailVal)}</td>
+            <td><span class="showtime-badge" style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-glass);">${escapeHtml(showTimeVal)}</span></td>
             <td>${booking.tickets} seat${booking.tickets > 1 ? 's' : ''}</td>
             <td>${paidBadge}</td>
             <td><small>${booking.bookingDate}</small></td>
@@ -853,6 +1058,9 @@ function sendWhatsAppConfirmation(booking, ticketNumber) {
     const phone = booking.phone;
     const bookingId = booking.bookingId;
     const tickets = booking.tickets;
+    
+    const parsed = parseCategory(booking.category);
+    const showTimeVal = parsed.showTime;
 
     const textMsg = `Hi *${name}*, your booking for the psychological thriller *ANIREEKSHITHAA* (The Unexpected) is *CONFIRMED*! 🎬🍿\n\n` +
         `🎫 *TICKET SLIP*:\n` +
@@ -861,7 +1069,7 @@ function sendWhatsAppConfirmation(booking, ticketNumber) {
         `• *Seats*: ${tickets} Ticket${tickets > 1 ? 's' : ''}\n` +
         `• *Venue*: Chamundeshwari Studios, Bangalore\n` +
         `• *Date*: Saturday, July 4, 2026\n` +
-        `• *Time*: 5:00 PM\n\n` +
+        `• *Time*: ${showTimeVal}\n\n` +
         `Please display this Ticket Number or Booking ID at the counter to retrieve your physical passes. See you at the movies! 🎥`;
 
     const encodedText = encodeURIComponent(textMsg);
@@ -1946,14 +2154,15 @@ async function downloadPDFTicket() {
     doc.line(30, 95, 350, 95);
 
     // 5. Draw Metadata
+    const isConfirmed = bookingState.paidStatus === 'Confirmed' || bookingState.paidStatus === 'SUCCESSFUL';
     const fields = [
         { label: 'ATTENDEE', val: bookingState.attendee.name, x: 40, y: 125 },
         { label: 'BOOKING ID', val: bookingState.bookingId, x: 220, y: 125, isRed: true },
         { label: 'SEATS', val: `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`, x: 40, y: 180 },
         { label: 'VENUE', val: 'Chamundeshwari Studios', x: 220, y: 180 },
         { label: 'DATE', val: 'July 4, 2026', x: 40, y: 235 },
-        { label: 'TIME', val: '5:00 PM onwards', x: 220, y: 235 },
-        { label: 'STATUS', val: (bookingState.paidStatus === 'SUCCESSFUL') ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: (bookingState.paidStatus !== 'SUCCESSFUL'), isGreen: (bookingState.paidStatus === 'SUCCESSFUL') }
+        { label: 'TIME', val: `${bookingState.showTime || '5:00 PM'} onwards`, x: 220, y: 235 },
+        { label: 'STATUS', val: isConfirmed ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: !isConfirmed, isGreen: isConfirmed }
     ];
 
     fields.forEach(f => {
