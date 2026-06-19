@@ -385,15 +385,9 @@ function submitDetailsForm() {
 
     console.log('[Payment Flow] Updated Step 3 summary with tickets:', bookingState.tickets, 'total:', grandTotal, 'showTime:', bookingState.showTime);
 
-    // Set dynamic UPI payment intent link for mobile
+    // Set dynamic UPI payment intent link for QR Code
     const upiId = '9986048332@ybl';
-    const upiDeepLink = `upi://pay?pa=${upiId}&pn=ANIREEKSHITHAA&am=${grandTotal}&cu=INR`;
-    
-    const mobileBtn = document.getElementById('payWithUpiMobileBtn');
-    if (mobileBtn) {
-        mobileBtn.setAttribute('href', upiDeepLink);
-        console.log('[Payment Flow] Set payWithUpiMobileBtn href attribute:', upiDeepLink);
-    }
+    const upiDeepLink = `upi://pay?pa=${upiId}&pn=ADARSH%20R&am=${grandTotal}&cu=INR`;
     
     // Set dynamic QR code image URL
     const qrImg = document.getElementById('upiQrCodeImg');
@@ -408,23 +402,6 @@ function submitDetailsForm() {
     
     const reviewPhoneElem = document.getElementById('reviewCustomerPhone');
     if (reviewPhoneElem) reviewPhoneElem.textContent = `+91 ${phone}`;
-
-    // Toggle payment buttons based on Mobile vs Desktop
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const iosContainer = document.getElementById('iosUpiAppsContainer');
-    const defaultPayBtn = document.getElementById('defaultUpiPayBtn');
-    
-    console.log('[Payment Flow] Device detection - isMobile:', isMobile, 'userAgent:', navigator.userAgent);
-    
-    if (isMobile) {
-        if (iosContainer) iosContainer.style.display = 'flex';
-        if (defaultPayBtn) defaultPayBtn.style.display = 'none';
-        console.log('[Payment Flow] Displaying mobile custom apps container and hiding default Proceed button.');
-    } else {
-        if (iosContainer) iosContainer.style.display = 'none';
-        if (defaultPayBtn) defaultPayBtn.style.display = 'inline-flex';
-        console.log('[Payment Flow] Displaying default Proceed button and hiding mobile custom apps container.');
-    }
 
     // Go to step 3 (Payment)
     goToStep(3);
@@ -458,32 +435,110 @@ async function copyTextToClipboard(text) {
     }
 }
 
-function copyUpiId() {
-    const upiId = '9986048332@ybl';
-    copyTextToClipboard(upiId).then(() => {
-        const btn = document.getElementById('copyUpiBtn');
-        if (btn) {
-            const originalHTML = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
-            btn.style.background = '#2ecc71';
-            setTimeout(() => {
-                btn.innerHTML = originalHTML;
-                btn.style.background = 'var(--red)';
-            }, 2000);
-        }
+function showToast(message, type = 'success') {
+    let container = document.getElementById('toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.style.position = 'fixed';
+        container.style.bottom = '30px';
+        container.style.left = '50%';
+        container.style.transform = 'translateX(-50%)';
+        container.style.zIndex = '9999';
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '10px';
+        container.style.pointerEvents = 'none';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.style.background = 'rgba(15, 15, 20, 0.95)';
+    toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+    toast.style.boxShadow = '0 10px 30px rgba(0, 0, 0, 0.5)';
+    toast.style.color = '#fff';
+    toast.style.padding = '12px 24px';
+    toast.style.borderRadius = '8px';
+    toast.style.fontSize = '0.9rem';
+    toast.style.fontWeight = '500';
+    toast.style.textAlign = 'center';
+    toast.style.display = 'flex';
+    toast.style.alignItems = 'center';
+    toast.style.gap = '8px';
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(20px)';
+    toast.style.transition = 'all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
+
+    let icon = '<i class="fa-solid fa-circle-check" style="color: #2ecc71;"></i>';
+    if (type === 'error') {
+        icon = '<i class="fa-solid fa-circle-xmark" style="color: var(--red);"></i>';
+    } else if (type === 'info') {
+        icon = '<i class="fa-solid fa-circle-info" style="color: #f1c40f;"></i>';
+    }
+
+    toast.innerHTML = `${icon} <span>${message}</span>`;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateY(0)';
+    }, 10);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-20px)';
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+
+function copyPayText(text, label) {
+    copyTextToClipboard(text).then(() => {
+        showToast(`${label} copied to clipboard!`);
     }).catch(err => {
-        console.error('Failed to copy UPI ID: ', err);
-        alert('Could not copy UPI ID. Please copy it manually.');
+        console.error('Failed to copy: ', err);
+        showToast('Failed to copy. Please copy manually.', 'error');
     });
 }
 
-async function submitUpiBooking() {
-    console.log('[Payment Flow] submitUpiBooking triggered. BookingState:', bookingState);
-
+function launchUpiApp(appName) {
     const upiId = '9986048332@ybl';
     
-    // Auto-copy the UPI ID to clipboard first
-    await copyTextToClipboard(upiId);
+    // Copy UPI ID to clipboard
+    copyTextToClipboard(upiId).then(() => {
+        showToast(`UPI ID Copied! Opening App...`);
+        
+        // Schemes to open app home screen directly
+        const schemes = {
+            phonepe: 'phonepe://',
+            gpay: 'tez://',
+            paytm: 'paytm://',
+            bhim: 'bhim://'
+        };
+        
+        const scheme = schemes[appName] || 'upi://';
+        
+        setTimeout(() => {
+            window.location.href = scheme;
+        }, 600);
+    }).catch(err => {
+        console.error('Failed to copy UPI ID: ', err);
+        showToast('Failed to copy UPI ID. Please copy manually.', 'error');
+    });
+}
+
+async function submitBookingAndProceed() {
+    console.log('[Payment Flow] submitBookingAndProceed triggered. BookingState:', bookingState);
+
+    const totalAmount = bookingState.tickets * bookingState.ticketPrice;
+
+    // Disable button to prevent double submissions
+    const confirmBtn = document.getElementById('confirmPaymentBtn');
+    if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+    }
 
     // Generate Random Booking ID
     const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
@@ -498,25 +553,14 @@ async function submitUpiBooking() {
     bookingState.transactionId = '-';
     bookingState.confirmed = false;
 
-    const totalAmount = bookingState.tickets * bookingState.ticketPrice;
-
-    // Direct redirect is restricted to mobile devices to avoid desktop disruption
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    if (isMobile) {
-        const upiDeepLink = `upi://pay?pa=${upiId}`;
-        console.log('[Payment Flow] Detected mobile. Launching default UPI app chooser synchronously:', upiDeepLink);
-        window.location.href = upiDeepLink;
-    } else {
-        console.log('[Payment Flow] Device is not mobile. Skipping automatic deep-link launch.');
-    }
-
-    // Save booking to Database (Supabase + LocalStorage) asynchronously in background (non-blocking)
-    console.log('[Payment Flow] Initiating background database save...');
-    saveBookingToDatabase().then(() => {
+    // Save booking to Database (Supabase + LocalStorage)
+    console.log('[Payment Flow] Saving booking to database...');
+    try {
+        await saveBookingToDatabase();
         console.log('[Payment Flow] Database save complete.');
-    }).catch(err => {
+    } catch (err) {
         console.error('[Payment Flow] Database save failed:', err);
-    });
+    }
 
     // Fill step 4 ticket elements
     const displayBookingId = document.getElementById('displayBookingId');
@@ -545,108 +589,10 @@ async function submitUpiBooking() {
     }
 
     // Show alert instructions banner on mobile
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     const alertBanner = document.getElementById('mobilePaymentInstructionAlert');
     if (alertBanner) {
         alertBanner.style.display = isMobile ? 'block' : 'none';
-    }
-
-    // Configure the WhatsApp screenshot upload button
-    const sendScreenshotBtn = document.getElementById('sendScreenshotBtn');
-    if (sendScreenshotBtn) {
-        const textMsg = `Hi, I have completed the payment of ₹${totalAmount.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
-        const encodedText = encodeURIComponent(textMsg);
-        sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
-        console.log('[Payment Flow] Configured screenshot upload link:', sendScreenshotBtn.getAttribute('href'));
-    }
-
-    // Move to confirmation panel (Step 4)
-    console.log('[Payment Flow] Transitioning UI to Step 4 (Verification).');
-    goToStep(4);
-}
-
-async function submitIosUpiBooking(appName) {
-    console.log('[Payment Flow] submitIosUpiBooking triggered. AppName:', appName, 'BookingState:', bookingState);
-
-    const upiId = '9986048332@ybl';
-    
-    // Auto-copy the UPI ID to clipboard first
-    await copyTextToClipboard(upiId);
-
-    // Generate Random Booking ID
-    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
-    const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like I, O
-    const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
-    bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
-    
-    console.log('[Payment Flow] Generated iOS Booking ID:', bookingState.bookingId);
-
-    // Set status to Pending Verification and record transaction details
-    bookingState.paidStatus = 'Pending Verification';
-    bookingState.transactionId = '-';
-    bookingState.confirmed = false;
-
-    const totalAmount = bookingState.tickets * bookingState.ticketPrice;
-
-    // Map apps to safe custom schemes that open the payment mode directly for the payee (never blocked by NPCI/banks since amount/name is omitted)
-    let deepLink = '';
-    if (appName === 'phonepe') {
-        deepLink = `phonepe://upi/pay?pa=${upiId}`;
-    } else if (appName === 'gpay') {
-        deepLink = `gpay://upi/pay?pa=${upiId}`;
-    } else if (appName === 'paytm') {
-        deepLink = `paytm://upi/pay?pa=${upiId}`;
-    } else if (appName === 'bhim') {
-        deepLink = `bhim://upi/pay?pa=${upiId}`;
-    } else if (appName === 'generic') {
-        deepLink = `upi://pay?pa=${upiId}`;
-    }
-
-    // Trigger deep link redirect SYNCHRONOUSLY before any async operations to preserve user gesture context
-    if (deepLink) {
-        console.log('[Payment Flow] Redirecting mobile browser via custom scheme synchronously:', deepLink);
-        window.location.href = deepLink;
-    } else {
-        console.warn('[Payment Flow] No custom deepLink scheme matches the app name:', appName);
-    }
-
-    // Save booking to Database (Supabase + LocalStorage) asynchronously in background (non-blocking)
-    console.log('[Payment Flow] Saving mobile booking to database asynchronously...');
-    saveBookingToDatabase().then(() => {
-        console.log('[Payment Flow] Database save complete.');
-    }).catch(err => {
-        console.error('[Payment Flow] Database save failed:', err);
-    });
-
-    // Fill step 4 ticket elements
-    const displayBookingId = document.getElementById('displayBookingId');
-    if (displayBookingId) displayBookingId.textContent = bookingState.bookingId;
-
-    const displayCustomerName = document.getElementById('displayCustomerName');
-    if (displayCustomerName) displayCustomerName.textContent = bookingState.attendee.name;
-
-    const displayCustomerPhone = document.getElementById('displayCustomerPhone');
-    if (displayCustomerPhone) displayCustomerPhone.textContent = `+91 ${bookingState.attendee.phone}`;
-
-    const displayTicketsCount = document.getElementById('displayTicketsCount');
-    if (displayTicketsCount) displayTicketsCount.textContent = `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`;
-
-    const displayAmountPaid = document.getElementById('displayAmountPaid');
-    if (displayAmountPaid) displayAmountPaid.textContent = `₹${totalAmount.toFixed(2)}`;
-
-    const displayShowTime = document.getElementById('displayShowTime');
-    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '5:00 PM';
-
-    const displayBookingStatus = document.getElementById('displayBookingStatus');
-    if (displayBookingStatus) {
-        displayBookingStatus.textContent = 'Pending Verification';
-        displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
-        displayBookingStatus.style.color = '#f1c40f';
-    }
-
-    // Show alert instructions banner
-    const alertBanner = document.getElementById('mobilePaymentInstructionAlert');
-    if (alertBanner) {
-        alertBanner.style.display = 'block';
     }
 
     // Configure the WhatsApp screenshot upload button
