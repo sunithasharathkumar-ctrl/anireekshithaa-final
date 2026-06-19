@@ -4,7 +4,8 @@
   "description": "Cinematic promotional and ticketing website for Anireekshithaa short film",
   "main": "index.html",
   "scripts": {
-    "dev": "npx -y http-server . -p 3000 -c-1"
+    "dev": "npx -y http-server . -p 3000 -c-1",
+    "build": "echo 'Static build success'"
   },
   "keywords": [],
   "author": "Aantharya Creations",
