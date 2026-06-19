@@ -166,7 +166,7 @@
                     <!-- Crew Card: Lead Actor (Sharath Raj) -->
                     <a href="https://www.instagram.com/sharathsharu_actor?igsh=bDFwZDJobWd0cHVn&utm_source=qr" target="_blank" class="crew-card" data-role="Cast" style="text-decoration: none; color: inherit;">
                         <div class="crew-image-wrapper">
-                            <img src="assets/sharath_raj.jpg" alt="Sharath Raj" style="width: 100%; height: 100%; object-fit: cover; object-position: center 45%;">
+                            <img src="assets/sharath_raj.jpg" alt="Sharath Raj" style="width: 100%; height: 100%; object-fit: cover; object-position: center top;">
                         </div>
                         <div class="crew-info">
                              <h3 class="crew-name">Sharath Raj <i class="fa-brands fa-instagram" style="font-size: 1.1rem; margin-left: 6px; color: var(--red); vertical-align: middle;"></i></h3>
@@ -582,159 +582,23 @@
                     </div>
                 </form>
             </div>
-            <!-- STEP 3: Review Booking & Pay -->
+            <!-- STEP 3: Booking Confirmation & Payment -->
             <div class="wizard-step-panel" id="stepPanel3" style="position: relative;">
-                <h3 class="panel-title">Review Booking</h3>
-                <p class="panel-subtitle">Verify your show details and proceed to secure payment gateway.</p>
-                
-                <div class="booking-review-container" style="margin-top: 20px; display: flex; flex-direction: column; gap: 15px;">
-                    <!-- Movie Details Card -->
-                    <div class="review-details-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 20px; text-align: left;">
-                        <span style="font-size: 0.75rem; background: var(--red); color: var(--text-white); padding: 2px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase; letter-spacing: 1.5px;">Premiere Screening</span>
-                        <img src="assets/title_logo.png" alt="Anireekshithaa Logo" style="height: 32px; width: auto; max-width: 100%; filter: drop-shadow(0 0 10px rgba(217, 35, 42, 0.3)); margin-top: 8px; margin-bottom: 6px; display: block;">
-                        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 15px;"><i class="fa-solid fa-film" style="margin-right: 6px; color: var(--red-bright);"></i> Kannada &bull; Suspense Thriller</p>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; font-size: 0.85rem; color: var(--text-light);">
-                            <div>
-                                <small style="display: block; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px;">DATE & TIME</small>
-                                <strong style="color: var(--text-white);" id="reviewDateTime">Sat, July 4, 2026 at 5:00 PM</strong>
-                            </div>
-                            <div>
-                                <small style="display: block; color: var(--text-muted); margin-bottom: 4px; font-weight: 600; letter-spacing: 0.5px;">VENUE</small>
-                                <strong style="color: var(--text-white);">Chamundeshwari Studios</strong>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Payment Details Card -->
-                    <div class="review-payment-card" style="background: #0b0c10; border: 1px solid var(--border-glass); border-radius: 8px; padding: 20px; text-align: left; display: flex; flex-direction: column; gap: 12px;">
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-light);">
-                            <span>Ticket Summary (<span id="summaryReviewQty">1 Seat</span>)</span>
-                            <strong id="summaryReviewSubtotal" style="color: var(--text-white);">₹99.00</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--text-muted); border-bottom: 1px dashed rgba(255,255,255,0.08); padding-bottom: 12px;">
-                            <span>Internet Handling Fee</span>
-                            <span style="color: #2ecc71; font-weight: bold;">FREE</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 5px;">
-                            <span style="font-size: 1rem; color: var(--text-white); font-weight: 600;">Amount Payable</span>
-                            <strong style="font-size: 1.40rem; color: var(--red-bright); font-family: 'Outfit', sans-serif; text-shadow: 0 0 10px rgba(217,35,42,0.2);" id="summaryReviewTotal">₹99.00</strong>
-                        </div>
-                    </div>
-
-                    <!-- UPI Details Section -->
-                    <div class="upi-payment-details" style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 8px; padding: 18px; text-align: left; display: flex; flex-direction: column; gap: 14px; margin-top: 5px;">
-                        
-                        <!-- Header with dynamic total price warning -->
-                        <div style="text-align: center; margin-bottom: 5px;">
-                            <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 2px;">Payment Details</span>
-                            <span style="font-size: 0.75rem; color: #f1c40f;">Copy details below & pay the exact total amount in your app.</span>
-                        </div>
-
-                        <!-- Payee Name Info -->
-                        <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 10px;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
-                                <span style="color: var(--text-muted);">Payee Name:</span>
-                                <strong style="color: var(--text-white);">ADARSH R</strong>
-                            </div>
-                            
-                            <!-- Pay via Mobile Number (Easiest) -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="color: var(--text-muted); font-size: 0.8rem;">Mobile Number (Recommended):</span>
-                                    <strong style="color: var(--text-white); font-family: monospace; font-size: 1rem;">9986048332</strong>
-                                </div>
-                                <button type="button" onclick="copyPayText('9986048332', 'Mobile Number')" style="background: var(--red); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                                    <i class="fa-solid fa-copy"></i> Copy
-                                </button>
-                            </div>
-
-                            <!-- Pay via UPI ID -->
-                            <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="color: var(--text-muted); font-size: 0.8rem;">UPI ID:</span>
-                                    <strong style="color: var(--text-white); font-family: monospace; font-size: 0.95rem;">9986048332@ybl</strong>
-                                </div>
-                                <button type="button" onclick="copyPayText('9986048332@ybl', 'UPI ID')" style="background: var(--red); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
-                                    <i class="fa-solid fa-copy"></i> Copy
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Quick Launch Apps Grid -->
-                        <div style="display: flex; flex-direction: column; gap: 6px;">
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">Quick-Open App (Copies UPI ID)</span>
-                            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                                <button type="button" onclick="launchUpiApp('phonepe')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #5f259f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(95, 37, 159, 0.15);">
-                                    <i class="fa-solid fa-wallet"></i> PhonePe
-                                </button>
-                                <button type="button" onclick="launchUpiApp('gpay')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(26, 115, 232, 0.15);">
-                                    <i class="fa-solid fa-brands fa-google"></i> Google Pay
-                                </button>
-                                <button type="button" onclick="launchUpiApp('paytm')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #00baf2; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(0, 186, 242, 0.15);">
-                                    <i class="fa-solid fa-wallet"></i> Paytm
-                                </button>
-                                <button type="button" onclick="launchUpiApp('bhim')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #e06c26; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(224, 108, 38, 0.15);">
-                                    <i class="fa-solid fa-wallet"></i> BHIM
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Dynamic QR Code Section -->
-                        <div style="display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 12px; gap: 8px;">
-                            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Or Scan QR Code to Pay</span>
-                            <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; background: white; border-radius: 8px; width: 130px;">
-                                <img id="upiQrCodeImg" src="" alt="Scan to Pay" style="width: 110px; height: 110px; display: block;">
-                            </div>
-                            <span style="font-size: 0.7rem; color: var(--text-light); text-align: center; line-height: 1.3;">
-                                <strong style="color: #2ecc71;">Desktop:</strong> Scan with any app.<br>
-                                <strong style="color: #f1c40f;">Mobile:</strong> Screenshot & select 'Scan from Gallery'.
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Unified "I Have Paid" Proceed Button -->
-                    <button type="button" id="confirmPaymentBtn" class="btn-primary" onclick="submitBookingAndProceed()" style="width: 100%; padding: 14px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid rgba(46, 204, 113, 0.3); background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); color: var(--text-white); border-radius: 6px; cursor: pointer; transition: all 0.2s ease; margin-top: 10px; font-size: 1.05rem; box-shadow: 0 4px 15px rgba(46, 204, 113, 0.25);">
-                        <i class="fa-solid fa-circle-check"></i> I Have Paid - Proceed
-                    </button>
-                    
-                    <!-- Safety note -->
-                    <div style="text-align: center; font-size: 0.75rem; color: #f1c40f; line-height: 1.4; background: rgba(241, 196, 15, 0.05); border: 1px dashed rgba(241, 196, 15, 0.2); padding: 12px; border-radius: 6px; margin-top: 10px;">
-                        <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i> 
-                        <span>If your UPI app shows a security decline when trying to launch directly, please manually type the phone number <strong>9986048332</strong> or paste the UPI ID inside your UPI app to pay.</span>
-                    </div>
-                </div>
-
-                <div class="wizard-nav-btns" style="margin-top: 20px;">
-                    <button class="btn-secondary" onclick="goToStep(2)">
-                        <i class="fa-solid fa-arrow-left"></i> Back
-                    </button>
-                    <span></span>
-                </div>
-            </div>
-
-            <!-- STEP 4: Success & Confirmation -->
-            <div class="wizard-step-panel" id="stepPanel4">
+                <!-- Success Header -->
                 <div class="success-header" style="text-align: center; margin-bottom: 20px;">
-                    <div class="success-icon" style="width: 60px; height: 60px; border-radius: 50%; background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 15px auto;">
-                        <i class="fa-solid fa-clock" style="color: #f1c40f; font-size: 1.80rem;"></i>
+                    <div class="success-icon" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
+                        <i class="fa-solid fa-clock" style="color: #f1c40f; font-size: 1.50rem;"></i>
                     </div>
-                    <h3 style="color: var(--text-white); font-size: 1.5rem; font-family: 'Outfit', sans-serif; font-weight: 700; margin-bottom: 10px;">Booking Request Submitted</h3>
-                    <p style="color: var(--text-light); font-size: 0.95rem; line-height: 1.6; max-width: 420px; margin: 0 auto;">
-                        Thank you for your booking request. Your payment and booking details have been submitted successfully. Our team will verify your payment and send the official ticket confirmation to your registered mobile number.
+                    <h3 style="color: var(--text-white); font-size: 1.4rem; font-family: 'Outfit', sans-serif; font-weight: 700; margin-bottom: 8px;">Booking Request Submitted</h3>
+                    <p style="color: var(--text-light); font-size: 0.85rem; line-height: 1.5; max-width: 420px; margin: 0 auto;">
+                        We have successfully recorded your details. To confirm your tickets, please make the online payment below. Our team will verify the payment and send the official ticket confirmation to your WhatsApp number.
                     </p>
                 </div>
 
-                <!-- Copied UPI ID Instruction Banner for Mobile Users -->
-                <div class="payment-instructions-alert" style="background: rgba(241, 196, 15, 0.08); border: 1px dashed rgba(241, 196, 15, 0.3); padding: 14px; border-radius: 6px; color: #f1c40f; font-size: 0.85rem; margin-bottom: 20px; text-align: left; line-height: 1.5; display: none;" id="mobilePaymentInstructionAlert">
-                    <i class="fa-solid fa-circle-info" style="margin-right: 6px; font-size: 1rem; color: #f1c40f;"></i>
-                    <span>UPI ID <strong style="color: white; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; font-family: monospace;">9986048332@ybl</strong> has been copied to your clipboard. If your payment app did not open, please open your UPI app (PhonePe, Google Pay, etc.), paste the ID (or type mobile **9986048332**), type the exact amount, and pay. Once completed, please upload the screenshot below!</span>
-                </div>
-
                 <!-- Booking Details Summary Card -->
-                <div class="booking-details-summary-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 20px; text-align: left; margin: 20px 0;">
-                    <h4 style="color: var(--text-white); font-size: 1rem; margin-bottom: 12px; font-family: 'Outfit', sans-serif; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;">Request Summary</h4>
-                    <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.9rem; color: var(--text-light);">
+                <div class="booking-details-summary-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 16px; text-align: left; margin: 15px 0;">
+                    <h4 style="color: var(--text-white); font-size: 0.95rem; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Request Summary</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-light);">
                         <div style="display: flex; justify-content: space-between;">
                             <span>Booking ID:</span>
                             <strong style="color: var(--text-white);" id="displayBookingId">-</strong>
@@ -756,21 +620,103 @@
                             <strong style="color: var(--text-white);" id="displayTicketsCount">-</strong>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
-                            <span>Amount Paid:</span>
+                            <span>Amount Payable:</span>
                             <strong style="color: var(--red-bright);" id="displayAmountPaid">-</strong>
                         </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
                             <span>Status:</span>
                             <span style="font-size: 0.75rem; background: rgba(241, 196, 15, 0.1); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;" id="displayBookingStatus">Pending Verification</span>
                         </div>
                     </div>
                 </div>
 
+                <!-- UPI Details Section -->
+                <div class="upi-payment-details" style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 8px; padding: 18px; text-align: left; display: flex; flex-direction: column; gap: 14px; margin-top: 5px;">
+                    
+                    <!-- Header with payee name -->
+                    <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.05); padding: 12px; border-radius: 6px; display: flex; flex-direction: column; gap: 10px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+                            <span style="color: var(--text-muted);">Payee Name:</span>
+                            <strong style="color: var(--text-white);">ADARSH R</strong>
+                        </div>
+                        
+                        <!-- Pay via Mobile Number (Easiest) -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">Mobile Number (Recommended):</span>
+                                <strong style="color: var(--text-white); font-family: monospace; font-size: 1rem;">9986048332</strong>
+                            </div>
+                            <button type="button" onclick="copyPayText('9986048332', 'Mobile Number')" style="background: var(--red); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-copy"></i> Copy
+                            </button>
+                        </div>
+
+                        <!-- Pay via UPI ID -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">UPI ID:</span>
+                                <strong style="color: var(--text-white); font-family: monospace; font-size: 0.95rem;">9986048332@ybl</strong>
+                            </div>
+                            <button type="button" onclick="copyPayText('9986048332@ybl', 'UPI ID')" style="background: var(--red); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                                <i class="fa-solid fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Launch Apps Grid -->
+                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: center;">Quick-Open App (Copies UPI ID)</span>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                            <button type="button" onclick="launchUpiApp('phonepe')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #5f259f; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(95, 37, 159, 0.15);">
+                                <i class="fa-solid fa-wallet"></i> PhonePe
+                            </button>
+                            <button type="button" onclick="launchUpiApp('gpay')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #1a73e8; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(26, 115, 232, 0.15);">
+                                <i class="fa-solid fa-brands fa-google"></i> Google Pay
+                            </button>
+                            <button type="button" onclick="launchUpiApp('paytm')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #00baf2; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(0, 186, 242, 0.15);">
+                                <i class="fa-solid fa-wallet"></i> Paytm
+                            </button>
+                            <button type="button" onclick="launchUpiApp('bhim')" style="padding: 10px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 6px; background: #e06c26; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; box-shadow: 0 4px 6px rgba(224, 108, 38, 0.15);">
+                                <i class="fa-solid fa-wallet"></i> BHIM
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic QR Code Section -->
+                    <div style="display: flex; flex-direction: column; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 6px; padding: 12px; gap: 8px;">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Or Scan QR Code to Pay</span>
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; background: white; border-radius: 8px; width: 130px;">
+                            <img id="upiQrCodeImg" src="" alt="Scan to Pay" style="width: 110px; height: 110px; display: block;">
+                        </div>
+                        <span style="font-size: 0.7rem; color: var(--text-light); text-align: center; line-height: 1.3;">
+                            <strong style="color: #2ecc71;">Desktop:</strong> Scan with any app.<br>
+                            <strong style="color: #f1c40f;">Mobile:</strong> Screenshot & select 'Scan from Gallery'.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action Controls Section -->
                 <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                    <!-- WhatsApp Screenshot Button -->
                     <a id="sendScreenshotBtn" target="_blank" href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #25D366; color: white; border-radius: 6px; padding: 13px 20px; font-weight: 600; text-decoration: none; font-size: 0.95rem; width: 100%; text-align: center; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); transition: background-color 0.2s;">
-                        <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Send Payment Screenshot
+                        <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Send Payment Screenshot on WhatsApp
                     </a>
-                    <button class="btn-secondary" onclick="closeBookingModal()" style="padding: 13px 40px; font-size: 0.95rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-glass); cursor: pointer; background: transparent; color: var(--text-white); width: 100%; transition: var(--transition-smooth);">Close Window</button>
+
+                    <!-- Change details and Close Buttons -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">
+                        <button type="button" class="btn-secondary" onclick="goToStep(2)" style="padding: 12px; font-size: 0.9rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-glass); cursor: pointer; background: transparent; color: var(--text-white); width: 100%; transition: var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                            <i class="fa-solid fa-pen-to-square"></i> Change Details
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="closeBookingModal()" style="padding: 12px; font-size: 0.9rem; font-weight: 600; border-radius: 6px; border: 1px solid var(--border-glass); cursor: pointer; background: rgba(255,255,255,0.05); color: var(--text-white); width: 100%; transition: var(--transition-smooth);">
+                            Close Window
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Safety note -->
+                <div style="text-align: center; font-size: 0.75rem; color: #f1c40f; line-height: 1.4; background: rgba(241, 196, 15, 0.05); border: 1px dashed rgba(241, 196, 15, 0.2); padding: 12px; border-radius: 6px; margin-top: 15px;">
+                    <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i> 
+                    <span>If your UPI app shows a security decline, please type the phone number <strong>9986048332</strong> or paste the UPI ID inside your UPI app to pay.</span>
                 </div>
             </div>
         </div>

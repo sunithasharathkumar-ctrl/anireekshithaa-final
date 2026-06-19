@@ -324,7 +324,7 @@ function goToStep(stepNumber) {
 
 function updateStepUI() {
     // Hide all steps
-    for (let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 3; i++) {
         const panel = document.getElementById(`stepPanel${i}`);
         if (panel) panel.classList.remove('active');
         
@@ -372,18 +372,54 @@ function submitDetailsForm() {
     // Save inputs to booking state
     bookingState.attendee = { name, phone, email };
 
-    // Update Step 3 review summary text fields dynamically
-    const grandTotal = bookingState.tickets * bookingState.ticketPrice;
-    document.getElementById('summaryReviewQty').textContent = `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`;
-    document.getElementById('summaryReviewSubtotal').textContent = `₹${grandTotal.toFixed(2)}`;
-    document.getElementById('summaryReviewTotal').textContent = `₹${grandTotal.toFixed(2)}`;
-
-    const reviewDateTimeElem = document.getElementById('reviewDateTime');
-    if (reviewDateTimeElem) {
-        reviewDateTimeElem.textContent = `Sat, July 4, 2026 at ${bookingState.showTime || '5:00 PM'}`;
+    // Generate Booking ID if not already generated (to support re-editing without generating a new ID)
+    if (!bookingState.bookingId) {
+        const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
+        const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+        const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
+        bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
     }
+    
+    // Set status
+    bookingState.paidStatus = 'Pending Verification';
+    bookingState.transactionId = '-';
+    bookingState.confirmed = false;
 
-    console.log('[Payment Flow] Updated Step 3 summary with tickets:', bookingState.tickets, 'total:', grandTotal, 'showTime:', bookingState.showTime);
+    const grandTotal = bookingState.tickets * bookingState.ticketPrice;
+
+    // Save booking to Database (Supabase + LocalStorage) asynchronously in background
+    console.log('[Payment Flow] Saving/updating booking to database...');
+    saveBookingToDatabase().then(() => {
+        console.log('[Payment Flow] Database save complete.');
+    }).catch(err => {
+        console.error('[Payment Flow] Database save failed:', err);
+    });
+
+    // Populate confirmation display elements
+    const displayBookingId = document.getElementById('displayBookingId');
+    if (displayBookingId) displayBookingId.textContent = bookingState.bookingId;
+
+    const displayCustomerName = document.getElementById('displayCustomerName');
+    if (displayCustomerName) displayCustomerName.textContent = bookingState.attendee.name;
+
+    const displayCustomerPhone = document.getElementById('displayCustomerPhone');
+    if (displayCustomerPhone) displayCustomerPhone.textContent = `+91 ${bookingState.attendee.phone}`;
+
+    const displayTicketsCount = document.getElementById('displayTicketsCount');
+    if (displayTicketsCount) displayTicketsCount.textContent = `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`;
+
+    const displayAmountPaid = document.getElementById('displayAmountPaid');
+    if (displayAmountPaid) displayAmountPaid.textContent = `₹${grandTotal.toFixed(2)}`;
+
+    const displayShowTime = document.getElementById('displayShowTime');
+    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '5:00 PM';
+
+    const displayBookingStatus = document.getElementById('displayBookingStatus');
+    if (displayBookingStatus) {
+        displayBookingStatus.textContent = 'Pending Verification';
+        displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
+        displayBookingStatus.style.color = '#f1c40f';
+    }
 
     // Set dynamic UPI payment intent link for QR Code
     const upiId = '9986048332@ybl';
@@ -397,13 +433,15 @@ function submitDetailsForm() {
         console.log('[Payment Flow] Generated QR Code URL:', qrUrl);
     }
 
-    const reviewNameElem = document.getElementById('reviewCustomerName');
-    if (reviewNameElem) reviewNameElem.textContent = name;
-    
-    const reviewPhoneElem = document.getElementById('reviewCustomerPhone');
-    if (reviewPhoneElem) reviewPhoneElem.textContent = `+91 ${phone}`;
+    // Configure the WhatsApp screenshot upload button
+    const sendScreenshotBtn = document.getElementById('sendScreenshotBtn');
+    if (sendScreenshotBtn) {
+        const textMsg = `Hi, I have completed the payment of ₹${grandTotal.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
+        const encodedText = encodeURIComponent(textMsg);
+        sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
+    }
 
-    // Go to step 3 (Payment)
+    // Go to step 3 (Payment & Confirmation)
     goToStep(3);
 }
 
@@ -528,86 +566,7 @@ function launchUpiApp(appName) {
     });
 }
 
-async function submitBookingAndProceed() {
-    console.log('[Payment Flow] submitBookingAndProceed triggered. BookingState:', bookingState);
 
-    const totalAmount = bookingState.tickets * bookingState.ticketPrice;
-
-    // Disable button to prevent double submissions
-    const confirmBtn = document.getElementById('confirmPaymentBtn');
-    if (confirmBtn) {
-        confirmBtn.disabled = true;
-        confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
-    }
-
-    // Generate Random Booking ID
-    const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
-    const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // Exclude ambiguous chars like I, O
-    const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
-    bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
-    
-    console.log('[Payment Flow] Generated Booking ID:', bookingState.bookingId);
-
-    // Set status to Pending Verification and record transaction details
-    bookingState.paidStatus = 'Pending Verification';
-    bookingState.transactionId = '-';
-    bookingState.confirmed = false;
-
-    // Save booking to Database (Supabase + LocalStorage)
-    console.log('[Payment Flow] Saving booking to database...');
-    try {
-        await saveBookingToDatabase();
-        console.log('[Payment Flow] Database save complete.');
-    } catch (err) {
-        console.error('[Payment Flow] Database save failed:', err);
-    }
-
-    // Fill step 4 ticket elements
-    const displayBookingId = document.getElementById('displayBookingId');
-    if (displayBookingId) displayBookingId.textContent = bookingState.bookingId;
-
-    const displayCustomerName = document.getElementById('displayCustomerName');
-    if (displayCustomerName) displayCustomerName.textContent = bookingState.attendee.name;
-
-    const displayCustomerPhone = document.getElementById('displayCustomerPhone');
-    if (displayCustomerPhone) displayCustomerPhone.textContent = `+91 ${bookingState.attendee.phone}`;
-
-    const displayTicketsCount = document.getElementById('displayTicketsCount');
-    if (displayTicketsCount) displayTicketsCount.textContent = `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`;
-
-    const displayAmountPaid = document.getElementById('displayAmountPaid');
-    if (displayAmountPaid) displayAmountPaid.textContent = `₹${totalAmount.toFixed(2)}`;
-
-    const displayShowTime = document.getElementById('displayShowTime');
-    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '5:00 PM';
-
-    const displayBookingStatus = document.getElementById('displayBookingStatus');
-    if (displayBookingStatus) {
-        displayBookingStatus.textContent = 'Pending Verification';
-        displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
-        displayBookingStatus.style.color = '#f1c40f';
-    }
-
-    // Show alert instructions banner on mobile
-    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    const alertBanner = document.getElementById('mobilePaymentInstructionAlert');
-    if (alertBanner) {
-        alertBanner.style.display = isMobile ? 'block' : 'none';
-    }
-
-    // Configure the WhatsApp screenshot upload button
-    const sendScreenshotBtn = document.getElementById('sendScreenshotBtn');
-    if (sendScreenshotBtn) {
-        const textMsg = `Hi, I have completed the payment of ₹${totalAmount.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
-        const encodedText = encodeURIComponent(textMsg);
-        sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
-        console.log('[Payment Flow] Configured screenshot upload link:', sendScreenshotBtn.getAttribute('href'));
-    }
-
-    // Move to confirmation panel (Step 4)
-    console.log('[Payment Flow] Transitioning UI to Step 4 (Verification).');
-    goToStep(4);
-}
 
 /* ==========================================================================
    DATABASE CONTROLLER (LOCAL BACKUP + SUPABASE LIVE DB)
@@ -681,7 +640,7 @@ async function saveBookingToDatabase() {
         transactionId: bookingState.transactionId || '-',
         tickets: bookingState.tickets,
         totalAmount: bookingState.tickets * bookingState.ticketPrice,
-        paidStatus: bookingState.paidStatus || 'PENDING',
+        paidStatus: bookingState.paidStatus || 'Pending Verification',
         bookingDate: new Date().toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
@@ -691,12 +650,19 @@ async function saveBookingToDatabase() {
         })
     };
 
-    // 1. Save to Local Storage as a local backup
+    // 1. Save/Update in Local Storage (prevent duplicates)
     const bookings = getBookings();
-    bookings.unshift(newBookingLocal);
+    const existingIndex = bookings.findIndex(b => b.bookingId === newBookingLocal.bookingId);
+    if (existingIndex !== -1) {
+        // Preserve original booking date if re-editing
+        newBookingLocal.bookingDate = bookings[existingIndex].bookingDate || newBookingLocal.bookingDate;
+        bookings[existingIndex] = newBookingLocal;
+    } else {
+        bookings.unshift(newBookingLocal);
+    }
     localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
 
-    // 2. Save to Supabase Cloud if configured
+    // 2. Save/Upsert to Supabase Cloud if configured
     if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
         const cloudCategory = newBookingLocal.category + (newBookingLocal.transactionId !== '-' ? ' | Txn: ' + newBookingLocal.transactionId : '');
         const newBookingCloud = {
@@ -711,11 +677,13 @@ async function saveBookingToDatabase() {
             booking_date: newBookingLocal.bookingDate
         };
         try {
-            const { error } = await supabaseClient.from('bookings').insert([newBookingCloud]);
+            const { error } = await supabaseClient
+                .from('bookings')
+                .upsert([newBookingCloud], { onConflict: 'booking_id' });
             if (error) throw error;
-            console.log('Successfully saved booking to Supabase!');
+            console.log('Successfully saved/updated booking in Supabase!');
         } catch (err) {
-            console.error('Failed to save to Supabase, backed up locally:', err);
+            console.error('Failed to upsert to Supabase, backed up locally:', err);
         }
     }
 }
