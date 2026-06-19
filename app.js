@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
     loadSampleData(); // Pre-populate some bookings if database is empty for rich visual experience
     loadSampleFeedbacks(); // Pre-populate audience feedbacks
     initReviewCorner(); // Setup voice note and stars triggers
+    initCountdown();
+    initShareButtons();
 });
 
 /* ==========================================================================
@@ -117,6 +119,118 @@ function initVideoPlayer() {
             muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
         }
     });
+}
+
+/* ==========================================================================
+   PREMIERE COUNTDOWN & SOCIAL SHARING CONTROLLERS
+   ========================================================================== */
+function initCountdown() {
+    const targetDate = new Date('2026-07-04T17:00:00+05:30').getTime();
+    
+    function updateCountdown() {
+        const now = new Date().getTime();
+        const difference = targetDate - now;
+        
+        const daysEl = document.getElementById('countdown-days');
+        const hoursEl = document.getElementById('countdown-hours');
+        const minutesEl = document.getElementById('countdown-minutes');
+        const secondsEl = document.getElementById('countdown-seconds');
+        const container = document.getElementById('countdown-container');
+        
+        if (!daysEl || !hoursEl || !minutesEl || !secondsEl) return;
+        
+        if (difference < 0) {
+            if (container) {
+                container.innerHTML = `
+                    <div class="countdown-started-msg"><i class="fa-solid fa-circle-play"></i> Premiere Has Begun!</div>
+                `;
+            }
+            return;
+        }
+        
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+        
+        daysEl.textContent = String(days).padStart(2, '0');
+        hoursEl.textContent = String(hours).padStart(2, '0');
+        minutesEl.textContent = String(minutes).padStart(2, '0');
+        secondsEl.textContent = String(seconds).padStart(2, '0');
+    }
+    
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+}
+
+function initShareButtons() {
+    const waBtn = document.getElementById('share-wa');
+    const fbBtn = document.getElementById('share-fb');
+    const igBtn = document.getElementById('share-ig');
+    
+    if (waBtn && fbBtn && igBtn) {
+        const text = "Check out the official teaser and book premiere tickets for 'Anireekshithaa - The Unexpected' 🎬🍿! Let's watch it together. Book your seats here: ";
+        const currentUrl = window.location.href;
+        
+        waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + currentUrl)}`;
+        fbBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
+        
+        igBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            navigator.clipboard.writeText(currentUrl).then(() => {
+                showToast("Link copied to clipboard! Share it on your Instagram Story or Bio 📸");
+                setTimeout(() => {
+                    window.open('https://www.instagram.com', '_blank');
+                }, 1500);
+            }).catch(() => {
+                showToast("Failed to copy link. Please copy the URL from your address bar!");
+            });
+        });
+    }
+}
+
+function showToast(message) {
+    let toast = document.getElementById('custom-toast');
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'custom-toast';
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(10, 10, 12, 0.95);
+            border: 1px solid var(--red-bright);
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 500;
+            z-index: 9999;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6), 0 0 15px rgba(217, 35, 42, 0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: none;
+        `;
+        document.body.appendChild(toast);
+    }
+    toast.innerHTML = `<i class="fa-solid fa-circle-check" style="color: var(--red-bright);"></i> ${message}`;
+    
+    // Trigger animation
+    requestAnimationFrame(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+    });
+    
+    // Hide after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(100px)';
+    }, 3000);
 }
 
 /* ==========================================================================

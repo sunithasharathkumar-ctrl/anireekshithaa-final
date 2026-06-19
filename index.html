@@ -69,6 +69,29 @@
                 </h1>
                 <p class="hero-meta"><i class="fa-regular fa-clock"></i> 1 Hour | <i class="fa-solid fa-film"></i> Psychological Thriller | Kannada</p>
                 
+                <!-- Premiere Countdown Widget -->
+                <div class="hero-countdown animate-fade-in" id="countdown-container">
+                    <span class="countdown-title"><i class="fa-solid fa-hourglass-half"></i> Premiere begins in</span>
+                    <div class="countdown-grid">
+                        <div class="countdown-card">
+                            <span class="countdown-num" id="countdown-days">14</span>
+                            <span class="countdown-label">Days</span>
+                        </div>
+                        <div class="countdown-card">
+                            <span class="countdown-num" id="countdown-hours">08</span>
+                            <span class="countdown-label">Hours</span>
+                        </div>
+                        <div class="countdown-card">
+                            <span class="countdown-num" id="countdown-minutes">21</span>
+                            <span class="countdown-label">Minutes</span>
+                        </div>
+                        <div class="countdown-card">
+                            <span class="countdown-num" id="countdown-seconds">00</span>
+                            <span class="countdown-label">Seconds</span>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="hero-ctas animate-scale-up">
                     <button class="btn-primary" onclick="openBookingModal()">
                         <i class="fa-solid fa-ticket"></i> Book Premiere Tickets
@@ -114,6 +137,24 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Share Section -->
+                <div class="teaser-share-block animate-fade-in">
+                    <p class="share-prompt">
+                        <i class="fa-solid fa-share-nodes"></i> Share the Thrill with Friends
+                    </p>
+                    <div class="share-buttons-container">
+                        <a href="#" id="share-wa" target="_blank" class="share-btn share-wa">
+                            <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                        </a>
+                        <a href="#" id="share-ig" class="share-btn share-ig">
+                            <i class="fa-brands fa-instagram"></i> Instagram
+                        </a>
+                        <a href="#" id="share-fb" target="_blank" class="share-btn share-fb">
+                            <i class="fa-brands fa-facebook-f"></i> Facebook
+                        </a>
                     </div>
                 </div>
             </div>
@@ -162,11 +203,12 @@
                 <span class="section-tag red-gradient-text">THE STAR CAST</span>
                 <h2 class="section-title">Meet the Cast</h2>
                 <p class="section-desc">The screen presence and talent that brought the characters of <strong>Anireekshithaa</strong> to life.</p>
-                               <div class="crew-grid">
+                <div class="crew-grid">
                     <!-- Crew Card: Lead Actor (Sharath Raj) -->
                     <a href="https://www.instagram.com/sharathsharu_actor?igsh=bDFwZDJobWd0cHVn&utm_source=qr" target="_blank" class="crew-card" data-role="Cast" style="text-decoration: none; color: inherit;">
                         <div class="crew-image-wrapper">
                             <img src="assets/sharath_raj.jpg" alt="Sharath Raj" style="width: 100%; height: 100%; object-fit: cover; object-position: center top;">
+                            <div class="crew-role">Cast (Tejas)</div>
                         </div>
                         <div class="crew-info">
                              <h3 class="crew-name">Sharath Raj <i class="fa-brands fa-instagram" style="font-size: 1.1rem; margin-left: 6px; color: var(--red); vertical-align: middle;"></i></h3>
@@ -178,10 +220,11 @@
                     <a href="https://www.instagram.com/sughosharam?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="crew-card" data-role="Cast" style="text-decoration: none; color: inherit;">
                         <div class="crew-image-wrapper">
                             <img src="assets/sughosh_ram.jpg" alt="Sughosh Ram" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%;">
+                            <div class="crew-role">Cast (Vikram)</div>
                         </div>
                         <div class="crew-info">
-                            <h3 class="crew-name">Sughosh Ram <i class="fa-brands fa-instagram" style="font-size: 1.1rem; margin-left: 6px; color: var(--red); vertical-align: middle;"></i></h3>
-                            <p class="crew-bio">Sughosh Ram acts as the enigmatic pivot in the thriller, whose appearances shift the narrative trajectory in unexpected, suspenseful directions.</p>
+                             <h3 class="crew-name">Sughosh Ram <i class="fa-brands fa-instagram" style="font-size: 1.1rem; margin-left: 6px; color: var(--red); vertical-align: middle;"></i></h3>
+                             <p class="crew-bio">Sughosh Ram acts as the enigmatic pivot in the thriller, whose appearances shift the narrative trajectory in unexpected, suspenseful directions.</p>
                         </div>
                     </a>
 
@@ -189,10 +232,11 @@
                     <a href="https://www.instagram.com/naanu_swaroop_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" class="crew-card" data-role="Cast" style="text-decoration: none; color: inherit;">
                         <div class="crew-image-wrapper">
                             <img src="assets/swaroop.jpg" alt="Swaroop" style="width: 100%; height: 100%; object-fit: cover; object-position: center 25%;">
+                            <div class="crew-role">Cast (Dev)</div>
                         </div>
                         <div class="crew-info">
-                            <h3 class="crew-name">Swaroop <i class="fa-brands fa-instagram" style="font-size: 1.1rem; margin-left: 6px; color: var(--red); vertical-align: middle;"></i></h3>
-                            <p class="crew-bio">Swaroop delivers a powerful performance as Dev, Vikram's associate whose suspicious motives drive the suspense of the loop.</p>
+                             <h3 class="crew-name">Swaroop <i class="fa-brands fa-instagram" style="font-size: 1.1rem; margin-left: 6px; color: var(--red); vertical-align: middle;"></i></h3>
+                             <p class="crew-bio">Swaroop delivers a powerful performance as Dev, Vikram's associate whose suspicious motives drive the suspense of the loop.</p>
                         </div>
                     </a>
  
@@ -200,6 +244,7 @@
                     <div class="crew-card" data-role="Cast">
                         <div class="crew-image-wrapper">
                             <img src="assets/sathish.png" alt="Sathish" style="width: 100%; height: 100%; object-fit: cover; object-position: center 20%;">
+                            <div class="crew-role">Cast</div>
                         </div>
                         <div class="crew-info">
                             <h3 class="crew-name">Sathish</h3>
@@ -211,6 +256,7 @@
                     <div class="crew-card" data-role="Cast">
                         <div class="crew-image-wrapper">
                             <img src="assets/swathi_gurudath.jpg" alt="Swathi Gurudath" style="width: 100%; height: 100%; object-fit: cover; object-position: center 15%;">
+                            <div class="crew-role">Cast</div>
                         </div>
                         <div class="crew-info">
                             <h3 class="crew-name">Swathi Gurudath</h3>

@@ -518,6 +518,79 @@ section {
     gap: 20px;
 }
 
+/* Premiere Countdown Widget */
+.hero-countdown {
+    margin: 25px auto 35px auto;
+    max-width: 480px;
+    background: rgba(10, 10, 12, 0.65);
+    border: 1px solid rgba(217, 35, 42, 0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 15px rgba(217, 35, 42, 0.05);
+}
+
+.countdown-title {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    text-shadow: 0 0 8px rgba(217, 35, 42, 0.3);
+}
+
+.countdown-grid {
+    display: flex;
+    justify-content: space-around;
+    gap: 10px;
+}
+
+.countdown-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 75px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.countdown-num {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--text-white);
+    line-height: 1.1;
+}
+
+.countdown-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+
+.countdown-started-msg {
+    font-family: 'Cinzel', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--red-bright);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-shadow: 0 0 10px rgba(217, 35, 42, 0.4);
+    padding: 10px;
+}
+
 .scroll-indicator {
     position: absolute;
     bottom: 40px;
@@ -748,6 +821,74 @@ section {
     left: 0;
 }
 
+
+/* Teaser Sharing Section */
+.teaser-share-block {
+    margin-top: 35px;
+    text-align: center;
+}
+
+.share-prompt {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 18px;
+    letter-spacing: 0.5px;
+}
+
+.share-prompt i {
+    color: var(--red);
+    margin-right: 6px;
+}
+
+.share-buttons-container {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: var(--text-white);
+    background: rgba(255, 255, 255, 0.02);
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.share-wa:hover {
+    background: rgba(37, 211, 102, 0.15);
+    border-color: #25D366;
+    color: #25D366;
+    box-shadow: 0 0 15px rgba(37, 211, 102, 0.2);
+    transform: translateY(-2px);
+}
+
+.share-ig:hover {
+    background: rgba(225, 48, 108, 0.15);
+    border-color: #E1306C;
+    color: #E1306C;
+    box-shadow: 0 0 15px rgba(225, 48, 108, 0.2);
+    transform: translateY(-2px);
+}
+
+.share-fb:hover {
+    background: rgba(24, 119, 242, 0.15);
+    border-color: #1877F2;
+    color: #1877F2;
+    box-shadow: 0 0 15px rgba(24, 119, 242, 0.2);
+    transform: translateY(-2px);
+}
+
 /* ==========================================================================
    CAST & CREW BIOS
    ========================================================================== */
@@ -759,40 +900,89 @@ section {
 }
 
 .crew-card {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border-glass);
-    border-radius: 12px;
+    background-color: #0d0e12;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 6px;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    transition: var(--transition-smooth);
+    position: relative;
     display: flex;
     flex-direction: column;
+    padding: 22px 10px; /* film negative sprocket border space */
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+    height: 380px; /* Uniform height for all cards! */
+    text-decoration: none;
+    color: inherit;
+    box-sizing: border-box;
 }
 
-.crew-card:hover {
-    transform: translateY(-8px);
-    border-color: var(--border-red);
-    box-shadow: 0 10px 25px rgba(217, 35, 42, 0.12);
-    background-color: var(--bg-card-hover);
+/* Sprocket holes styling */
+.crew-card::before,
+.crew-card::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    background-image: repeating-linear-gradient(90deg, 
+        transparent 0px, transparent 10px, 
+        #000 10px, #000 16px);
+    background-size: 26px 8px;
+    z-index: 10;
+    opacity: 0.65;
 }
 
+.crew-card::before {
+    top: 6px;
+}
+
+.crew-card::after {
+    bottom: 6px;
+}
+
+/* Image wrapper fills the inner frame */
 .crew-image-wrapper {
     width: 100%;
-    height: 260px;
+    height: 100%; /* Fill the card completely */
     position: relative;
     overflow: hidden;
+    border: 1px solid rgba(0, 0, 0, 0.6);
+    border-radius: 2px;
 }
 
 .crew-image-wrapper img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    object-position: center top;
-    transition: var(--transition-smooth);
+    transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+    filter: brightness(0.85) contrast(1.05);
 }
 
-.crew-card:hover .crew-image-wrapper img {
-    transform: scale(1.05);
+/* Film labeling overlays */
+.crew-image-wrapper::before {
+    content: 'AANTHARYA 400';
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    font-family: monospace;
+    font-size: 0.55rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.crew-image-wrapper::after {
+    content: '▶ 35mm';
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    font-family: monospace;
+    font-size: 0.55rem;
+    color: rgba(255, 255, 255, 0.3);
+    letter-spacing: 1px;
+    z-index: 5;
+    pointer-events: none;
 }
 
 .crew-image-placeholder {
@@ -821,45 +1011,105 @@ section {
     left: 0;
     width: 100%;
     height: 40%;
-    background: linear-gradient(to top, rgba(10,10,12,1), transparent);
+    background: linear-gradient(to top, rgba(10, 10, 12, 1), transparent);
 }
 
 .crew-role {
     position: absolute;
-    bottom: 15px;
-    left: 20px;
-    background: rgba(0, 0, 0, 0.75);
-    backdrop-filter: blur(5px);
-    border: 1px solid var(--border-glass);
-    color: var(--red-bright);
-    padding: 4px 12px;
+    bottom: 45px; /* Stay just above the default name position */
+    left: 12px;
+    background: rgba(217, 35, 42, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-white);
+    padding: 3px 8px;
     border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 1px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     text-transform: uppercase;
+    z-index: 7;
+    pointer-events: none;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
+/* Absolute Info Overlay */
 .crew-info {
-    padding: 25px;
-    flex-grow: 1;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px 12px 25px 12px;
+    background: linear-gradient(to top, rgba(10, 10, 12, 0.95) 0%, rgba(10, 10, 12, 0.85) 60%, rgba(10, 10, 12, 0) 100%);
+    z-index: 6;
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform: translateY(115px); /* Hide the bio by default, only show name & role */
     display: flex;
     flex-direction: column;
+    box-sizing: border-box;
 }
 
 .crew-name {
     font-family: 'Cinzel', serif;
-    font-size: 1.4rem;
+    font-size: 1.15rem;
     color: var(--text-white);
-    margin-bottom: 10px;
-    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .crew-bio {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     font-weight: 300;
-    line-height: 1.5;
+    line-height: 1.4;
+    margin-top: 8px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    overflow-y: auto;
+    max-height: 90px;
+    padding-right: 4px;
+}
+
+/* Scrollbar styling for the bio container */
+.crew-bio::-webkit-scrollbar {
+    width: 3px;
+}
+.crew-bio::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+.crew-bio::-webkit-scrollbar-thumb {
+    background: var(--red);
+    border-radius: 2px;
+}
+
+/* Hover Effects */
+.crew-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--red);
+    box-shadow: 0 12px 30px rgba(217, 35, 42, 0.25);
+}
+
+.crew-card:hover .crew-image-wrapper img {
+    transform: scale(1.08);
+    filter: brightness(0.4) contrast(1.15) blur(1px);
+}
+
+.crew-card:hover .crew-role {
+    bottom: calc(100% - 32px); /* Move it to the top left of the card on hover */
+    background: rgba(0, 0, 0, 0.85);
+    border-color: var(--red);
+}
+
+.crew-card:hover .crew-info {
+    transform: translateY(0);
+    background: rgba(10, 10, 12, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.crew-card:hover .crew-bio {
+    opacity: 1;
 }
 
 /* ==========================================================================
@@ -2825,29 +3075,39 @@ section {
     }
     
     .crew-card {
-        border-radius: 10px !important;
+        border-radius: 6px !important;
+        height: 380px !important; /* Keep uniform height on mobile */
+        padding: 20px 8px !important;
     }
     
     .crew-image-wrapper {
-        height: 230px !important;
+        height: 100% !important;
     }
     
     .crew-info {
-        padding: 18px 15px !important;
+        padding: 15px 12px 25px 12px !important;
+        transform: translateY(115px) !important;
+    }
+    
+    .crew-card:hover .crew-info {
+        transform: translateY(0) !important;
+    }
+    
+    .crew-role {
+        bottom: 45px !important;
+    }
+    
+    .crew-card:hover .crew-role {
+        bottom: calc(100% - 32px) !important;
     }
     
     .crew-name {
-        font-size: 1.25rem !important;
-        margin-bottom: 8px !important;
+        font-size: 1.15rem !important;
     }
     
     .crew-bio {
-        font-size: 0.85rem !important;
-    }
-    
-    .crew-contact {
-        margin-top: 12px !important;
-        padding-top: 10px !important;
+        font-size: 0.8rem !important;
+        max-height: 90px !important;
     }
 
     /* Review Corner Feedback Grid */
