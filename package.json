@@ -5,7 +5,7 @@
   "main": "index.html",
   "scripts": {
     "dev": "npx -y http-server . -p 3000 -c-1",
-    "build": "echo 'Static build success'"
+    "build": "mkdir -p public && cp index.html styles.css app.js public/ && cp -r assets public/"
   },
   "keywords": [],
   "author": "Aantharya Creations",
