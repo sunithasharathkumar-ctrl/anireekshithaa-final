@@ -125,7 +125,7 @@ function initVideoPlayer() {
    PREMIERE COUNTDOWN & SOCIAL SHARING CONTROLLERS
    ========================================================================== */
 function initCountdown() {
-    const targetDate = new Date('2026-07-04T17:00:00+05:30').getTime();
+    const targetDate = new Date('2026-07-25T17:00:00+05:30').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -1096,7 +1096,7 @@ function sendWhatsAppConfirmation(booking, ticketNumber) {
         `• *Booking ID*: ${bookingId}\n` +
         `• *Seats*: ${tickets} Ticket${tickets > 1 ? 's' : ''}\n` +
         `• *Venue*: Chamundeshwari Studios, Bangalore\n` +
-        `• *Date*: Saturday, July 4, 2026\n` +
+        `• *Date*: Saturday, July 25, 2026\n` +
         `• *Time*: ${showTimeVal}\n\n` +
         `Please display this Ticket Number or Booking ID at the counter to retrieve your physical passes. See you at the movies! 🎥`;
 
@@ -2188,7 +2188,7 @@ async function downloadPDFTicket() {
         { label: 'BOOKING ID', val: bookingState.bookingId, x: 220, y: 125, isRed: true },
         { label: 'SEATS', val: `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`, x: 40, y: 180 },
         { label: 'VENUE', val: 'Chamundeshwari Studios', x: 220, y: 180 },
-        { label: 'DATE', val: 'July 4, 2026', x: 40, y: 235 },
+        { label: 'DATE', val: 'July 25, 2026', x: 40, y: 235 },
         { label: 'TIME', val: `${bookingState.showTime || '5:00 PM'} onwards`, x: 220, y: 235 },
         { label: 'STATUS', val: isConfirmed ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: !isConfirmed, isGreen: isConfirmed }
     ];
