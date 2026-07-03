@@ -2390,16 +2390,56 @@ section {
         width: 100% !important;
     }
     
+    /* Show compact horizontal navbar on mobile - same as desktop */
     .header {
-        padding: 15px 20px;
+        padding: 10px 12px;
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
+    }
+    
+    .header .logo {
+        text-align: center;
     }
     
     .nav-links {
+        display: flex !important;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 0;
+        justify-content: flex-start;
+        align-items: center;
+        scrollbar-width: none; /* Firefox */
+        -ms-overflow-style: none; /* IE */
+        border-top: 1px solid var(--border-glass);
+        padding-top: 6px;
+    }
+    
+    .nav-links::-webkit-scrollbar {
         display: none;
     }
     
+    .nav-item {
+        font-size: 0.75rem !important;
+        padding: 6px 10px !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        letter-spacing: 0.5px !important;
+    }
+    
+    /* Book Tickets button compact size for mobile nav */
+    .nav-links .btn-primary {
+        padding: 6px 12px !important;
+        font-size: 0.75rem !important;
+        letter-spacing: 0.5px !important;
+        white-space: nowrap;
+        flex-shrink: 0;
+        border-radius: 4px !important;
+    }
+    
+    /* Hide the hamburger menu button completely */
     .mobile-menu-btn {
-        display: block;
+        display: none !important;
     }
     
     .crew-grid {
@@ -2482,66 +2522,13 @@ section {
     }
 }
 
-/* Mobile Nav Modal Setup */
+/* Mobile Nav Overlay - now hidden/unused since we use horizontal bar */
 .mobile-nav-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: var(--bg-darker);
-    z-index: 1001;
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 40px;
-    backdrop-filter: blur(15px);
+    display: none !important;
 }
 
 .mobile-nav-overlay.active {
-    display: flex;
-}
-
-.mobile-nav-close {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    background: transparent;
-    border: none;
-    color: var(--text-white);
-    font-size: 2rem;
-    cursor: pointer;
-}
-
-.mobile-nav-links {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-}
-
-.mobile-nav-item {
-    color: var(--text-muted);
-    font-size: 1.4rem;
-    text-decoration: none;
-    font-weight: 500;
-    transition: var(--transition-smooth);
-}
-
-.mobile-nav-item:hover {
-    color: var(--red);
-}
-
-.mobile-nav-btn {
-    padding: 12px 30px;
-    border-radius: 6px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-white);
-    background: linear-gradient(135deg, var(--red-bright) 0%, var(--red) 100%);
-    text-decoration: none;
-    box-shadow: 0 4px 15px var(--red-glow);
+    display: none !important;
 }
 
 /* Collaborative Contact Link styles for non-nested element rendering */
@@ -2839,65 +2826,56 @@ section {
         line-height: 1.5 !important;
     }
 
-    /* Header & Logo Sizing */
+    /* Header - compact two-row layout on small screens */
     .header {
-        padding: 12px 16px !important;
+        padding: 8px 12px !important;
+        flex-direction: column !important;
+        gap: 4px !important;
+        align-items: stretch !important;
     }
     
     .header.sticky {
-        padding: 10px 16px !important;
+        padding: 8px 12px !important;
     }
     
+    .header .logo {
+        text-align: center;
+    }
+
     .header .logo a {
-        font-size: 1.2rem !important;
+        font-size: 1.1rem !important;
         letter-spacing: 1px !important;
         white-space: nowrap !important;
     }
     
+    /* Horizontal scrollable nav on small mobile */
+    .nav-links {
+        display: flex !important;
+        gap: 0 !important;
+        overflow-x: auto !important;
+        scrollbar-width: none !important;
+    }
+
+    .nav-item {
+        font-size: 0.7rem !important;
+        padding: 5px 8px !important;
+    }
+
+    .nav-links .btn-primary {
+        padding: 5px 10px !important;
+        font-size: 0.7rem !important;
+    }
+
+    /* Hide hamburger - no longer needed */
     .mobile-menu-btn {
-        font-size: 1.3rem !important;
-        width: 44px !important;
-        height: 44px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
-        background: transparent !important;
-        border: none !important;
+        display: none !important;
     }
     
-    .mobile-nav-close {
-        top: 15px !important;
-        right: 15px !important;
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 1.8rem !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border-radius: 50% !important;
-        background: rgba(255, 255, 255, 0.05) !important;
-    }
-    
-    .mobile-nav-item {
-        padding: 12px 20px !important;
-        min-height: 48px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-    
-    .mobile-nav-btn {
-        min-height: 48px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        margin-top: 10px !important;
-    }
+
 
     /* Hero Landing Screen */
     .hero-section {
-        padding-top: 80px !important;
+        padding-top: 110px !important;
         min-height: calc(100vh - 20px) !important;
         display: flex;
         align-items: center;
