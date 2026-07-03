@@ -124,36 +124,72 @@ function initVideoPlayer() {
     const customPlayer = document.querySelector('.custom-video-player');
 
     if (fullscreenBtn && customPlayer) {
-        fullscreenBtn.addEventListener('click', (e) => {
+        fullscreenBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
-            if (!document.fullscreenElement) {
-                if (customPlayer.requestFullscreen) {
-                    customPlayer.requestFullscreen();
-                } else if (customPlayer.webkitRequestFullscreen) { // Safari
-                    customPlayer.webkitRequestFullscreen();
-                } else if (customPlayer.msRequestFullscreen) { // IE11
-                    customPlayer.msRequestFullscreen();
+            
+            // Check if we are on iOS/mobile where we should use webkitEnterFullscreen directly
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+            if (isIOS && video.webkitEnterFullscreen) {
+                try {
+                    video.webkitEnterFullscreen();
+                    return;
+                } catch (err) {
+                    console.warn('[Fullscreen] webkitEnterFullscreen failed:', err);
                 }
-                fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            }
+
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                try {
+                    if (customPlayer.requestFullscreen) {
+                        await customPlayer.requestFullscreen();
+                    } else if (customPlayer.webkitRequestFullscreen) { // Safari
+                        await customPlayer.webkitRequestFullscreen();
+                    } else if (customPlayer.msRequestFullscreen) { // IE11
+                        await customPlayer.msRequestFullscreen();
+                    } else if (video.requestFullscreen) {
+                        await video.requestFullscreen();
+                    } else if (video.webkitEnterFullscreen) {
+                        video.webkitEnterFullscreen();
+                    }
+                    fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+                } catch (err) {
+                    console.warn('[Fullscreen] requestFullscreen failed, trying direct video fallback:', err);
+                    try {
+                        if (video.requestFullscreen) {
+                            await video.requestFullscreen();
+                        } else if (video.webkitEnterFullscreen) {
+                            video.webkitEnterFullscreen();
+                        }
+                    } catch (fallbackErr) {
+                        console.error('[Fullscreen] Direct video fallback failed:', fallbackErr);
+                    }
+                }
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                } else if (document.webkitExitFullscreen) {
-                    document.webkitExitFullscreen();
-                } else if (document.msExitFullscreen) {
-                    document.msExitFullscreen();
+                try {
+                    if (document.exitFullscreen) {
+                        await document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        await document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        await document.msExitFullscreen();
+                    }
+                    fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+                } catch (err) {
+                    console.error('[Fullscreen] exitFullscreen failed:', err);
                 }
-                fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
             }
         });
 
-        document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement) {
+        const updateFullscreenIcon = () => {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
                 fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
             } else {
                 fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
             }
-        });
+        };
+
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
 
         // Double click video to fullscreen/exit
         video.addEventListener('dblclick', (e) => {
