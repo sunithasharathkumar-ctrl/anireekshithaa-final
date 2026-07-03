@@ -256,7 +256,7 @@ function closeLightbox() {
 let bookingState = {
     step: 1,
     tickets: 1,
-    ticketPrice: 99,
+    ticketPrice: 123,
     attendee: {
         name: '',
         phone: '',
@@ -273,7 +273,7 @@ function openBookingModal() {
     bookingState = {
         step: 1,
         tickets: 1,
-        ticketPrice: 99,
+        ticketPrice: 123,
         showTime: '5:00 PM', // Default showtime
         attendee: { name: '', phone: '', email: '' },
         bookingId: '',
@@ -291,7 +291,7 @@ function openBookingModal() {
 
     // Reset UI pricing displays
     document.getElementById('ticketQty').textContent = '1';
-    document.getElementById('summaryTotal').textContent = '₹99.00';
+    document.getElementById('summaryTotal').textContent = '₹123.00';
 
     // Reset showtime radio selections to 5:00 PM
     const showTime500Radio = document.querySelector('input[name="showTimeSelect"][value="5:00 PM"]');
@@ -814,7 +814,7 @@ function loadSampleData() {
                 profession: 'Confirmed | Ticket: TKT-451230',
                 category: 'kiran.hegde@gmail.com',
                 tickets: 2,
-                totalAmount: 198,
+                totalAmount: 246,
                 paidStatus: 'Confirmed',
                 bookingDate: '06 Jun 2026, 05:20 PM'
             },
@@ -825,7 +825,7 @@ function loadSampleData() {
                 profession: 'Audience',
                 category: 'rohit.sharma@yahoo.com',
                 tickets: 1,
-                totalAmount: 99,
+                totalAmount: 123,
                 paidStatus: 'Pending Verification',
                 bookingDate: '06 Jun 2026, 03:10 PM'
             },
@@ -836,7 +836,7 @@ function loadSampleData() {
                 profession: 'Confirmed | Ticket: TKT-340158',
                 category: 'pooja.bhat@gmail.com',
                 tickets: 4,
-                totalAmount: 396,
+                totalAmount: 492,
                 paidStatus: 'Confirmed',
                 bookingDate: '05 Jun 2026, 08:45 PM'
             },
@@ -847,7 +847,7 @@ function loadSampleData() {
                 profession: 'Audience',
                 category: 'suhas.k@outlook.com',
                 tickets: 2,
-                totalAmount: 198,
+                totalAmount: 246,
                 paidStatus: 'Pending Verification',
                 bookingDate: '05 Jun 2026, 11:15 AM'
             },
@@ -858,7 +858,7 @@ function loadSampleData() {
                 profession: 'Confirmed | Ticket: TKT-125087',
                 category: 'anjali.shetty@gmail.com',
                 tickets: 1,
-                totalAmount: 99,
+                totalAmount: 123,
                 paidStatus: 'Confirmed',
                 bookingDate: '04 Jun 2026, 06:12 PM'
             }
