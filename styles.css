@@ -821,6 +821,19 @@ section {
     left: 0;
 }
 
+.custom-video-player:fullscreen {
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-video-player:fullscreen video {
+    width: 100vw;
+    height: 100vh;
+    object-fit: contain;
+}
+
 
 /* Teaser Sharing Section */
 .teaser-share-block {

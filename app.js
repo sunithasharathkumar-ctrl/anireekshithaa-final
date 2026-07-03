@@ -119,6 +119,48 @@ function initVideoPlayer() {
             muteBtn.innerHTML = '<i class="fa-solid fa-volume-high"></i>';
         }
     });
+
+    const fullscreenBtn = document.getElementById('fullscreenBtn');
+    const customPlayer = document.querySelector('.custom-video-player');
+
+    if (fullscreenBtn && customPlayer) {
+        fullscreenBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (!document.fullscreenElement) {
+                if (customPlayer.requestFullscreen) {
+                    customPlayer.requestFullscreen();
+                } else if (customPlayer.webkitRequestFullscreen) { // Safari
+                    customPlayer.webkitRequestFullscreen();
+                } else if (customPlayer.msRequestFullscreen) { // IE11
+                    customPlayer.msRequestFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+            }
+        });
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement) {
+                fullscreenBtn.innerHTML = '<i class="fa-solid fa-expand"></i>';
+            } else {
+                fullscreenBtn.innerHTML = '<i class="fa-solid fa-compress"></i>';
+            }
+        });
+
+        // Double click video to fullscreen/exit
+        video.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            fullscreenBtn.click();
+        });
+    }
 }
 
 /* ==========================================================================
