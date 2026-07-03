@@ -248,7 +248,7 @@ function initShareButtons() {
     
     if (waBtn && fbBtn && igBtn) {
         const text = "Check out the official teaser and book premiere tickets for 'Anireekshithaa - The Unexpected' 🎬🍿! Let's watch it together. Book your seats here: ";
-        const currentUrl = window.location.href;
+        const currentUrl = 'https://anireekshithaa-final.vercel.app/';
         
         waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + currentUrl)}`;
         fbBtn.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
@@ -453,7 +453,7 @@ async function refreshShowCapacities() {
             }
         });
 
-        const maxSeats = 150;
+        const maxSeats = 140;
         const remaining500 = Math.max(0, maxSeats - booked500);
         const remaining630 = Math.max(0, maxSeats - booked630);
 

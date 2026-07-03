@@ -2760,14 +2760,14 @@ section {
 }
 
 .synopsis-paragraphs p {
-    color: var(--text-muted);
+    color: var(--text-light);
     font-size: 1.05rem;
     line-height: 1.7;
 }
 
 .synopsis-paragraphs .lead-paragraph {
-    color: var(--text-white);
-    font-size: 1.15rem;
+    color: var(--text-light);
+    font-size: 1.05rem;
 }
 
 .font-cinzel {
@@ -2797,9 +2797,9 @@ section {
 
 .synopsis-highlight-box p {
     color: var(--text-light);
-    font-size: 1rem;
+    font-size: 1.05rem;
     margin: 0;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 /* ==========================================================================
@@ -3484,7 +3484,11 @@ section {
     }
     
     .synopsis-paragraphs .lead-paragraph {
-        font-size: 1.05rem !important;
+        font-size: 0.95rem !important;
+    }
+
+    .synopsis-highlight-box p {
+        font-size: 0.95rem !important;
     }
     
     .synopsis-highlight-box {
