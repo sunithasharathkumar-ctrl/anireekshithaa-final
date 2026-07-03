@@ -13,12 +13,32 @@ document.addEventListener('DOMContentLoaded', () => {
     initScrollNavbar();
     initVideoPlayer();
     initMobileNav();
+    initProfessionDropdown();
     loadSampleData(); // Pre-populate some bookings if database is empty for rich visual experience
     loadSampleFeedbacks(); // Pre-populate audience feedbacks
     initReviewCorner(); // Setup voice note and stars triggers
     initCountdown();
     initShareButtons();
 });
+
+function initProfessionDropdown() {
+    const professionSelect = document.getElementById('bookingProfession');
+    const filmMakerRoleGroup = document.getElementById('filmMakerRoleGroup');
+    const filmMakerRoleSelect = document.getElementById('filmMakerRole');
+
+    if (professionSelect && filmMakerRoleGroup && filmMakerRoleSelect) {
+        professionSelect.addEventListener('change', () => {
+            if (professionSelect.value === 'Film Maker') {
+                filmMakerRoleGroup.style.display = 'block';
+                filmMakerRoleSelect.setAttribute('required', 'required');
+            } else {
+                filmMakerRoleGroup.style.display = 'none';
+                filmMakerRoleSelect.removeAttribute('required');
+                filmMakerRoleSelect.value = '';
+            }
+        });
+    }
+}
 
 /* ==========================================================================
    NAVIGATION & MOBILE MENU CONTROLLER
@@ -338,7 +358,8 @@ let bookingState = {
     attendee: {
         name: '',
         phone: '',
-        email: ''
+        profession: '',
+        role: ''
     },
     bookingId: '',
     confirmed: false,
@@ -353,7 +374,7 @@ function openBookingModal() {
         tickets: 1,
         ticketPrice: 123,
         showTime: '5:00 PM', // Default showtime
-        attendee: { name: '', phone: '', email: '' },
+        attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
         confirmed: false,
         paidStatus: 'PENDING',
@@ -362,6 +383,15 @@ function openBookingModal() {
 
     // Reset inputs
     document.getElementById('bookingForm').reset();
+    
+    // Reset conditional inputs UI
+    const filmMakerRoleGroup = document.getElementById('filmMakerRoleGroup');
+    const filmMakerRoleSelect = document.getElementById('filmMakerRole');
+    if (filmMakerRoleGroup && filmMakerRoleSelect) {
+        filmMakerRoleGroup.style.display = 'none';
+        filmMakerRoleSelect.removeAttribute('required');
+    }
+
     const mockWhatsappPopup = document.getElementById('mockWhatsappPopup');
     if (mockWhatsappPopup) {
         mockWhatsappPopup.style.display = 'none';
@@ -542,14 +572,25 @@ function updateStepUI() {
 function submitDetailsForm() {
     const name = document.getElementById('bookingName').value.trim();
     const phone = document.getElementById('bookingPhone').value.trim();
-    const email = document.getElementById('bookingEmail').value.trim();
+    
+    const professionSelect = document.getElementById('bookingProfession');
+    const roleSelect = document.getElementById('filmMakerRole');
+    
+    const profession = professionSelect ? professionSelect.value : 'Public Audience';
+    const role = (profession === 'Film Maker' && roleSelect) ? roleSelect.value : '-';
 
-    console.log('[Payment Flow] submitDetailsForm triggered. Input values:', { name, phone, email });
+    console.log('[Payment Flow] submitDetailsForm triggered. Input values:', { name, phone, profession, role });
 
     // Basic validation
-    if (!name || !phone) {
-        console.warn('[Payment Flow] Validation failed: Name or Phone missing.');
+    if (!name || !phone || !profession) {
+        console.warn('[Payment Flow] Validation failed: Name, Phone, or Profession missing.');
         alert('Please fill all required details.');
+        return;
+    }
+
+    if (profession === 'Film Maker' && (!role || role === '')) {
+        console.warn('[Payment Flow] Validation failed: Filmmaker Role missing.');
+        alert('Please select your Filmmaker role.');
         return;
     }
 
@@ -562,7 +603,7 @@ function submitDetailsForm() {
     }
 
     // Save inputs to booking state
-    bookingState.attendee = { name, phone, email };
+    bookingState.attendee = { name, phone, profession, role };
 
     // Generate Booking ID if not already generated (to support re-editing without generating a new ID)
     if (!bookingState.bookingId) {
@@ -827,8 +868,8 @@ async function saveBookingToDatabase() {
         bookingId: bookingState.bookingId,
         name: bookingState.attendee.name,
         phone: bookingState.attendee.phone,
-        profession: 'Audience',
-        category: (bookingState.showTime || '5:00 PM') + ' | ' + (bookingState.attendee.email || '-'),
+        profession: bookingState.attendee.profession === 'Film Maker' ? `Film Maker - ${bookingState.attendee.role}` : bookingState.attendee.profession,
+        category: (bookingState.showTime || '5:00 PM') + ' | ' + bookingState.attendee.profession + ' | ' + bookingState.attendee.role,
         transactionId: bookingState.transactionId || '-',
         tickets: bookingState.tickets,
         totalAmount: bookingState.tickets * bookingState.ticketPrice,
@@ -1040,22 +1081,39 @@ function parseCategory(category) {
 
     if (category && category.includes(' | ')) {
         const parts = category.split(' | ');
-        // The first part could be showTime if it is "5:00 PM" or "6:30 PM"
+        // New category format: showTime | profession | role | [Txn: txnId]
+        // Older category format: showTime | email | [Txn: txnId]
         if (parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
             showTime = parts[0];
-            email = parts[1] || '-';
-            if (parts[2] && parts[2].startsWith('Txn: ')) {
-                txnId = parts[2].replace('Txn: ', '');
-            } else if (parts[2]) {
-                txnId = parts[2];
+            const part1 = parts[1] || '-';
+            const part2 = parts[2] || '-';
+            
+            if (part1 === 'Student' || part1 === 'Public Audience' || part1 === 'Film Maker') {
+                if (part1 === 'Film Maker') {
+                    email = `Film Maker - ${part2}`;
+                } else {
+                    email = part1;
+                }
+                
+                const possibleTxn = parts[3] || '';
+                if (possibleTxn.startsWith('Txn: ')) {
+                    txnId = possibleTxn.replace('Txn: ', '');
+                } else if (possibleTxn) {
+                    txnId = possibleTxn;
+                }
+            } else {
+                email = part1;
+                if (part2.startsWith('Txn: ')) {
+                    txnId = part2.replace('Txn: ', '');
+                } else if (part2 && part2 !== '-') {
+                    txnId = part2;
+                }
             }
         } else {
-            // Older category format which might have ' | ' or just represent email/txn
             email = parts[0];
             if (parts[1]) txnId = parts[1];
         }
     } else if (category) {
-        // Just the email
         email = category;
     }
     return { showTime, email, txnId };

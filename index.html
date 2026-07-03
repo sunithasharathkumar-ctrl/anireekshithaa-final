@@ -11,14 +11,14 @@
     <meta property="og:url" content="https://anireekshithaa-final.vercel.app/">
     <meta property="og:title" content="Anireekshithaa - The Unexpected | Premiere Booking">
     <meta property="og:description" content="Watch the teaser and book tickets for the premier show of Anireekshithaa, a psychological thriller film at Chamundeshwari Studios.">
-    <meta property="og:image" content="https://anireekshithaa-final.vercel.app/assets/poster.jpg">
+    <meta property="og:image" content="https://anireekshithaa-final.vercel.app/assets/share_preview.jpg">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="https://anireekshithaa-final.vercel.app/">
     <meta property="twitter:title" content="Anireekshithaa - The Unexpected | Premiere Booking">
     <meta property="twitter:description" content="Watch the teaser and book tickets for the premier show of Anireekshithaa, a psychological thriller film at Chamundeshwari Studios.">
-    <meta property="twitter:image" content="https://anireekshithaa-final.vercel.app/assets/poster.jpg">
+    <meta property="twitter:image" content="https://anireekshithaa-final.vercel.app/assets/share_preview.jpg">
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -621,8 +621,26 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="bookingEmail">Email Address <span class="text-muted" style="font-size: 0.8rem; font-weight: normal; opacity: 0.7;">(Optional)</span></label>
-                        <input type="email" id="bookingEmail" placeholder="Enter your email address">
+                        <label for="bookingProfession">Audience Profession <span class="required">*</span></label>
+                        <select id="bookingProfession" required style="width: 100%; padding: 12px; background: rgba(10, 10, 12, 0.95); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-white); font-family: 'Outfit', sans-serif; font-size: 0.95rem; cursor: pointer; outline: none; transition: border-color 0.3s; box-sizing: border-box;">
+                            <option value="" disabled selected>Select your profession</option>
+                            <option value="Student">Student</option>
+                            <option value="Public Audience">Public Audience</option>
+                            <option value="Film Maker">Film Maker</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group" id="filmMakerRoleGroup" style="display: none; margin-top: 15px;">
+                        <label for="filmMakerRole">Film Maker Role <span class="required">*</span></label>
+                        <select id="filmMakerRole" style="width: 100%; padding: 12px; background: rgba(10, 10, 12, 0.95); border: 1px solid var(--border-glass); border-radius: 8px; color: var(--text-white); font-family: 'Outfit', sans-serif; font-size: 0.95rem; cursor: pointer; outline: none; transition: border-color 0.3s; box-sizing: border-box;">
+                            <option value="" disabled selected>Select your role</option>
+                            <option value="Actor">Actor</option>
+                            <option value="Director">Director</option>
+                            <option value="Editor">Editor</option>
+                            <option value="Music Director">Music Director</option>
+                            <option value="Colorist">Colorist</option>
+                            <option value="Others">Others</option>
+                        </select>
                     </div>
 
                     <div class="wizard-nav-btns">
@@ -693,13 +711,13 @@
                             <strong style="color: var(--text-white);">ADARSH R</strong>
                         </div>
                         
-                        <!-- Pay via Mobile Number (Easiest) -->
+                        <!-- Pay via UPI Number (Easiest) -->
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 8px;">
                             <div style="display: flex; flex-direction: column;">
-                                <span style="color: var(--text-muted); font-size: 0.8rem;">Mobile Number (Recommended):</span>
+                                <span style="color: var(--text-muted); font-size: 0.8rem;">UPI Number (Recommended):</span>
                                 <strong style="color: var(--text-white); font-family: monospace; font-size: 1rem;">9986048332</strong>
                             </div>
-                            <button type="button" onclick="copyPayText('9986048332', 'Mobile Number')" style="background: var(--red); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                            <button type="button" onclick="copyPayText('9986048332', 'UPI Number')" style="background: var(--red); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 4px;">
                                 <i class="fa-solid fa-copy"></i> Copy
                             </button>
                         </div>
@@ -769,7 +787,7 @@
                 <!-- Safety note -->
                 <div style="text-align: center; font-size: 0.75rem; color: #f1c40f; line-height: 1.4; background: rgba(241, 196, 15, 0.05); border: 1px dashed rgba(241, 196, 15, 0.2); padding: 12px; border-radius: 6px; margin-top: 15px;">
                     <i class="fa-solid fa-circle-info" style="margin-right: 4px;"></i> 
-                    <span>If your UPI app shows a security decline, please type the phone number <strong>9986048332</strong> or paste the UPI ID inside your UPI app to pay.</span>
+                    <span>If your UPI app shows a security decline, please type the UPI number <strong>9986048332</strong> or paste the UPI ID inside your UPI app to pay.</span>
                 </div>
             </div>
         </div>
@@ -863,7 +881,7 @@
                                 <th>Booking ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
-                                <th>Email</th>
+                                <th>Profession / Role</th>
                                 <th>Show Time</th>
                                 <th>Tickets</th>
                                 <th>Amount</th>
@@ -907,7 +925,7 @@
                                 <th>Booking ID</th>
                                 <th>Name</th>
                                 <th>Phone</th>
-                                <th>Email</th>
+                                <th>Profession / Role</th>
                                 <th>Show Time</th>
                                 <th>Tickets</th>
                                 <th>Paid</th>
