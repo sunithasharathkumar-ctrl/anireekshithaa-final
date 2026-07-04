@@ -103,8 +103,12 @@ function initVideoPlayer() {
     const video = document.getElementById('promoVideo');
     const playPauseBtn = document.getElementById('playPauseBtn');
     const progressBar = document.getElementById('progressBar');
+    const progressBarWrapper = document.getElementById('progressBarWrapper');
     const muteBtn = document.getElementById('muteBtn');
+    const rewindBtn = document.getElementById('rewindBtn');
+    const forwardBtn = document.getElementById('forwardBtn');
 
+    // Click thumbnail to play
     container.addEventListener('click', () => {
         if (frame.style.display === 'none') {
             thumb.style.display = 'none';
@@ -114,8 +118,8 @@ function initVideoPlayer() {
         }
     });
 
-    playPauseBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop click from triggering parent
+    // Toggle play/pause
+    const togglePlayPause = () => {
         if (video.paused) {
             video.play();
             playPauseBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
@@ -123,13 +127,73 @@ function initVideoPlayer() {
             video.pause();
             playPauseBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
         }
+    };
+
+    playPauseBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePlayPause();
     });
 
+    // Click on video directly to play/pause
+    video.addEventListener('click', (e) => {
+        e.stopPropagation();
+        togglePlayPause();
+    });
+
+    // Update progress bar
     video.addEventListener('timeupdate', () => {
-        const percentage = (video.currentTime / video.duration) * 100;
-        progressBar.style.width = `${percentage}%`;
+        if (video.duration) {
+            const percentage = (video.currentTime / video.duration) * 100;
+            progressBar.style.width = `${percentage}%`;
+        }
     });
 
+    // Rewind 10s button
+    if (rewindBtn) {
+        rewindBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            video.currentTime = Math.max(0, video.currentTime - 10);
+        });
+    }
+
+    // Forward 10s button
+    if (forwardBtn) {
+        forwardBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            video.currentTime = Math.min(video.duration, video.currentTime + 10);
+        });
+    }
+
+    // Scrub/Seek on timeline
+    if (progressBarWrapper) {
+        const handleScrub = (e) => {
+            e.stopPropagation();
+            if (!video.duration) return;
+            const rect = progressBarWrapper.getBoundingClientRect();
+            const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+            let pos = (clientX - rect.left) / rect.width;
+            pos = Math.max(0, Math.min(1, pos));
+            video.currentTime = pos * video.duration;
+        };
+
+        // Desktop Click
+        progressBarWrapper.addEventListener('click', handleScrub);
+
+        // Mobile Drag/Touch support
+        let isDragging = false;
+        progressBarWrapper.addEventListener('touchstart', (e) => {
+            isDragging = true;
+            handleScrub(e);
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (isDragging) handleScrub(e);
+        });
+        window.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    }
+
+    // Mute/unmute volume
     muteBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         video.muted = !video.muted;
@@ -217,6 +281,22 @@ function initVideoPlayer() {
             fullscreenBtn.click();
         });
     }
+
+    // Keyboard Shortcuts (Space to play/pause, left/right arrows to skip 10s)
+    window.addEventListener('keydown', (e) => {
+        if (frame.style.display === 'block') {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                togglePlayPause();
+            } else if (e.code === 'ArrowRight') {
+                e.preventDefault();
+                video.currentTime = Math.min(video.duration, video.currentTime + 10);
+            } else if (e.code === 'ArrowLeft') {
+                e.preventDefault();
+                video.currentTime = Math.max(0, video.currentTime - 10);
+            }
+        }
+    });
 }
 
 /* ==========================================================================
