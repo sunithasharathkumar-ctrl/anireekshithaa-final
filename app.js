@@ -434,7 +434,7 @@ function closeLightbox() {
 let bookingState = {
     step: 1,
     tickets: 1,
-    ticketPrice: 123,
+    ticketPrice: 125,
     attendee: {
         name: '',
         phone: '',
@@ -452,7 +452,7 @@ function openBookingModal() {
     bookingState = {
         step: 1,
         tickets: 1,
-        ticketPrice: 123,
+        ticketPrice: 125,
         showTime: '5:00 PM', // Default showtime
         attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
@@ -479,7 +479,7 @@ function openBookingModal() {
 
     // Reset UI pricing displays
     document.getElementById('ticketQty').textContent = '1';
-    document.getElementById('summaryTotal').textContent = '₹123.00';
+    document.getElementById('summaryTotal').textContent = '₹125.00';
 
     // Reset showtime radio selections to 5:00 PM
     const showTime500Radio = document.querySelector('input[name="showTimeSelect"][value="5:00 PM"]');
@@ -1010,10 +1010,10 @@ function loadSampleData() {
                 bookingId: 'ANR-4512-Y',
                 name: 'Kiran Hegde',
                 phone: '9845210214',
-                profession: 'Confirmed | Ticket: TKT-451230',
+                profession: 'Confirmed | Ticket: S1-001, S1-002',
                 category: 'kiran.hegde@gmail.com',
                 tickets: 2,
-                totalAmount: 246,
+                totalAmount: 250,
                 paidStatus: 'Confirmed',
                 bookingDate: '06 Jun 2026, 05:20 PM'
             },
@@ -1024,7 +1024,7 @@ function loadSampleData() {
                 profession: 'Audience',
                 category: 'rohit.sharma@yahoo.com',
                 tickets: 1,
-                totalAmount: 123,
+                totalAmount: 125,
                 paidStatus: 'Pending Verification',
                 bookingDate: '06 Jun 2026, 03:10 PM'
             },
@@ -1032,10 +1032,10 @@ function loadSampleData() {
                 bookingId: 'ANR-3401-G',
                 name: 'Pooja Bhat',
                 phone: '8095412356',
-                profession: 'Confirmed | Ticket: TKT-340158',
+                profession: 'Confirmed | Ticket: S1-003, S1-004, S1-005, S1-006',
                 category: 'pooja.bhat@gmail.com',
                 tickets: 4,
-                totalAmount: 492,
+                totalAmount: 500,
                 paidStatus: 'Confirmed',
                 bookingDate: '05 Jun 2026, 08:45 PM'
             },
@@ -1046,7 +1046,7 @@ function loadSampleData() {
                 profession: 'Audience',
                 category: 'suhas.k@outlook.com',
                 tickets: 2,
-                totalAmount: 246,
+                totalAmount: 250,
                 paidStatus: 'Pending Verification',
                 bookingDate: '05 Jun 2026, 11:15 AM'
             },
@@ -1054,10 +1054,10 @@ function loadSampleData() {
                 bookingId: 'ANR-1250-F',
                 name: 'Anjali Shetty',
                 phone: '8884442211',
-                profession: 'Confirmed | Ticket: TKT-125087',
+                profession: 'Confirmed | Ticket: S1-007',
                 category: 'anjali.shetty@gmail.com',
                 tickets: 1,
-                totalAmount: 123,
+                totalAmount: 125,
                 paidStatus: 'Confirmed',
                 bookingDate: '04 Jun 2026, 06:12 PM'
             }
@@ -1281,6 +1281,15 @@ function renderTableRows(bookingsList) {
             actionBtn = `${approveBtn} ${rejectBtn}`;
         }
 
+        let ticketDisplay = '';
+        if (booking.paidStatus === 'Confirmed') {
+            let ticketNo = '-';
+            if (booking.profession && booking.profession.includes('Ticket: ')) {
+                ticketNo = booking.profession.split('Ticket: ')[1].trim();
+            }
+            ticketDisplay = `<div style="font-size: 0.75rem; margin-top: 4px; color: #2ecc71; font-family: monospace; font-weight: bold;">Ticket: ${ticketNo}</div>`;
+        }
+
         tr.innerHTML = `
             <td><strong>${booking.bookingId}</strong></td>
             <td>${escapeHtml(booking.name)}</td>
@@ -1288,7 +1297,7 @@ function renderTableRows(bookingsList) {
             <td>${escapeHtml(emailVal)}</td>
             <td><span class="showtime-badge" style="background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 4px; font-weight: 600; font-size: 0.8rem; border: 1px solid var(--border-glass);">${escapeHtml(showTimeVal)}</span></td>
             <td>${booking.tickets} seat${booking.tickets > 1 ? 's' : ''}</td>
-            <td>${paidBadge}</td>
+            <td>${paidBadge}${ticketDisplay}</td>
             <td><small>${booking.bookingDate}</small></td>
             <td>${actionBtn}</td>
         `;
@@ -1334,7 +1343,47 @@ async function approveBookingRequest(bookingId) {
         return;
     }
 
-    const ticketNumber = 'TKT-' + Math.floor(100000 + Math.random() * 900000);
+    const localBookings = getBookings();
+    const targetBooking = localBookings.find(b => b.bookingId === bookingId);
+    if (!targetBooking) {
+        alert("Booking request not found!");
+        return;
+    }
+
+    const parsed = parseCategory(targetBooking.category);
+    const showTimeVal = parsed.showTime;
+    const showPrefix = showTimeVal === '6:30 PM' ? 'S2' : 'S1';
+
+    let allBookings = [];
+    if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
+        try {
+            allBookings = await getBookingsFromSupabase();
+        } catch (err) {
+            console.error("Failed to fetch bookings from Supabase, using local cache:", err);
+            allBookings = localBookings;
+        }
+    } else {
+        allBookings = localBookings;
+    }
+
+    let confirmedSeatsCount = 0;
+    allBookings.forEach(b => {
+        if (b.paidStatus === 'Confirmed' && b.bookingId !== bookingId) {
+            const bParsed = parseCategory(b.category);
+            if (bParsed.showTime === showTimeVal) {
+                confirmedSeatsCount += parseInt(b.tickets) || 0;
+            }
+        }
+    });
+
+    const ticketList = [];
+    const numTickets = parseInt(targetBooking.tickets) || 1;
+    for (let i = 1; i <= numTickets; i++) {
+        const sequenceNum = confirmedSeatsCount + i;
+        const paddedNum = String(sequenceNum).padStart(3, '0');
+        ticketList.push(`${showPrefix}-${paddedNum}`);
+    }
+    const ticketNumber = ticketList.join(', ');
     const updatedProfession = `Confirmed | Ticket: ${ticketNumber}`;
 
     let success = false;
@@ -1461,11 +1510,31 @@ function resendWhatsAppText(bookingId) {
     const bookings = getBookings();
     const targetBooking = bookings.find(b => b.bookingId === bookingId);
     if (targetBooking) {
-        let ticketNumber = 'TKT-000000';
+        let ticketNumber = '-';
         if (targetBooking.profession && targetBooking.profession.includes('Ticket: ')) {
             ticketNumber = targetBooking.profession.split('Ticket: ')[1].trim();
         } else {
-            ticketNumber = 'TKT-' + Math.floor(100000 + Math.random() * 900000);
+            const parsed = parseCategory(targetBooking.category);
+            const showTimeVal = parsed.showTime;
+            const showPrefix = showTimeVal === '6:30 PM' ? 'S2' : 'S1';
+            
+            let confirmedSeatsCount = 0;
+            bookings.forEach(b => {
+                if (b.paidStatus === 'Confirmed' && b.bookingId !== bookingId) {
+                    const bParsed = parseCategory(b.category);
+                    if (bParsed.showTime === showTimeVal) {
+                        confirmedSeatsCount += parseInt(b.tickets) || 0;
+                    }
+                }
+            });
+            const ticketList = [];
+            const numTickets = parseInt(targetBooking.tickets) || 1;
+            for (let i = 1; i <= numTickets; i++) {
+                const sequenceNum = confirmedSeatsCount + i;
+                const paddedNum = String(sequenceNum).padStart(3, '0');
+                ticketList.push(`${showPrefix}-${paddedNum}`);
+            }
+            ticketNumber = ticketList.join(', ');
         }
         sendWhatsAppConfirmation(targetBooking, ticketNumber);
     }
