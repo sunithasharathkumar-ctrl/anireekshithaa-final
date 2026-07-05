@@ -347,7 +347,7 @@ function initShareButtons() {
     const igBtn = document.getElementById('share-ig');
     
     if (waBtn && fbBtn && igBtn) {
-        const text = "Check out the official teaser and book premiere tickets for 'Anireekshithaa - The Unexpected' 🎬🍿! Let's watch it together. Book your seats here: ";
+        const text = "Check out the link to get more info about our film. ";
         const currentUrl = 'https://anireekshithaa-final.vercel.app/';
         
         waBtn.href = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + currentUrl)}`;
