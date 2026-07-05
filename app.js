@@ -649,7 +649,7 @@ function updateStepUI() {
     }
 }
 
-function submitDetailsForm() {
+async function submitDetailsForm() {
     const name = document.getElementById('bookingName').value.trim();
     const phone = document.getElementById('bookingPhone').value.trim();
     
@@ -685,12 +685,30 @@ function submitDetailsForm() {
     // Save inputs to booking state
     bookingState.attendee = { name, phone, profession, role };
 
-    // Generate Booking ID if not already generated (to support re-editing without generating a new ID)
+    // Generate Booking ID if not already generated (sequential 1 to 140 format per show)
     if (!bookingState.bookingId) {
-        const randomNum = Math.floor(1000 + Math.random() * 9000); // 4-digit code
-        const alphabets = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
-        const randomChar = alphabets[Math.floor(Math.random() * alphabets.length)];
-        bookingState.bookingId = `ANR-${randomNum}-${randomChar}`;
+        const showTimeVal = bookingState.showTime || '5:00 PM';
+        const showPrefix = showTimeVal === '6:30 PM' ? 'S2' : 'S1';
+
+        let bookings = [];
+        try {
+            bookings = await getBookingsFromSupabase();
+        } catch (err) {
+            console.error("Failed to fetch fresh bookings from Supabase, using local cache:", err);
+            bookings = getBookings();
+        }
+
+        let countForShow = 0;
+        bookings.forEach(b => {
+            const parsed = parseCategory(b.category);
+            if (parsed.showTime === showTimeVal) {
+                countForShow++;
+            }
+        });
+
+        const nextNum = countForShow + 1;
+        const paddedNum = String(nextNum).padStart(3, '0');
+        bookingState.bookingId = `${showPrefix}-${paddedNum}`;
     }
     
     // Set status
