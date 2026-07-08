@@ -949,6 +949,67 @@ section {
     transform: scale(1.05);
 }
 
+/* Card Shine Micro-Interaction */
+.crew-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.crew-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.12) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    pointer-events: none;
+    z-index: 2;
+}
+
+.crew-card:hover::after {
+    left: 150%;
+    transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+/* Showtime Cards Shine */
+#showTimeCard-500,
+#showTimeCard-630 {
+    position: relative;
+    overflow: hidden;
+}
+
+#showTimeCard-500::after,
+#showTimeCard-630::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.15) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: skewX(-25deg);
+    pointer-events: none;
+    z-index: 2;
+}
+
+#showTimeCard-500:hover::after,
+#showTimeCard-630:hover::after {
+    left: 150%;
+    transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
 .crew-image-placeholder {
     width: 100%;
     height: 100%;
