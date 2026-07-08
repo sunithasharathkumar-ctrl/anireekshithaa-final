@@ -453,7 +453,7 @@ function openBookingModal() {
         step: 1,
         tickets: 1,
         ticketPrice: 100,
-        showTime: '5:00 PM', // Default showtime
+        showTime: '4:00 PM', // Default showtime
         attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
         confirmed: false,
@@ -481,10 +481,10 @@ function openBookingModal() {
     document.getElementById('ticketQty').textContent = '1';
     document.getElementById('summaryTotal').textContent = '₹100.00';
 
-    // Reset showtime radio selections to 5:00 PM
-    const showTime500Radio = document.querySelector('input[name="showTimeSelect"][value="5:00 PM"]');
-    if (showTime500Radio) showTime500Radio.checked = true;
-    selectShowTime('5:00 PM');
+    // Reset showtime radio selections to 4:00 PM
+    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="4:00 PM"]');
+    if (showTime400Radio) showTime400Radio.checked = true;
+    selectShowTime('4:00 PM');
 
     // Refresh live show capacities
     refreshShowCapacities();
@@ -513,26 +513,26 @@ function selectShowTime(time) {
     bookingState.showTime = time;
     console.log('[Showtime] Selected show time:', time);
 
-    const card500 = document.getElementById('showTimeCard-500');
-    const card630 = document.getElementById('showTimeCard-630');
+    const card400 = document.getElementById('showTimeCard-400');
+    const card600 = document.getElementById('showTimeCard-600');
 
-    if (time === '5:00 PM') {
-        if (card500) {
-            card500.style.border = '1px solid var(--red)';
-            card500.style.background = 'rgba(217, 35, 42, 0.08)';
+    if (time === '4:00 PM' || time === '5:00 PM') {
+        if (card400) {
+            card400.style.border = '1px solid var(--red)';
+            card400.style.background = 'rgba(217, 35, 42, 0.08)';
         }
-        if (card630) {
-            card630.style.border = '1px solid var(--border-glass)';
-            card630.style.background = 'rgba(255, 255, 255, 0.01)';
+        if (card600) {
+            card600.style.border = '1px solid var(--border-glass)';
+            card600.style.background = 'rgba(255, 255, 255, 0.01)';
         }
     } else {
-        if (card500) {
-            card500.style.border = '1px solid var(--border-glass)';
-            card500.style.background = 'rgba(255, 255, 255, 0.01)';
+        if (card400) {
+            card400.style.border = '1px solid var(--border-glass)';
+            card400.style.background = 'rgba(255, 255, 255, 0.01)';
         }
-        if (card630) {
-            card630.style.border = '1px solid var(--red)';
-            card630.style.background = 'rgba(217, 35, 42, 0.08)';
+        if (card600) {
+            card600.style.border = '1px solid var(--red)';
+            card600.style.background = 'rgba(217, 35, 42, 0.08)';
         }
     }
 }
@@ -542,53 +542,57 @@ async function refreshShowCapacities() {
     try {
         const bookings = await getBookingsFromSupabase();
         
-        let booked500 = 0;
-        let booked630 = 0;
+        let booked400 = 0;
+        let booked600 = 0;
 
         bookings.forEach(b => {
             if (b.paidStatus === 'Rejected') return;
 
-            let showTime = '5:00 PM';
+            let showTime = '4:00 PM';
             if (b.category && b.category.includes(' | ')) {
                 const parts = b.category.split(' | ');
-                if (parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+                if (parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
                     showTime = parts[0];
                 }
             }
 
-            if (showTime === '5:00 PM') {
-                booked500 += b.tickets;
-            } else if (showTime === '6:30 PM') {
-                booked630 += b.tickets;
+            if (showTime === '4:00 PM' || showTime === '5:00 PM') {
+                booked400 += b.tickets;
+            } else if (showTime === '6:00 PM' || showTime === '6:30 PM') {
+                booked600 += b.tickets;
             }
         });
 
         const maxSeats = 140;
-        const remaining500 = Math.max(0, maxSeats - booked500);
-        const remaining630 = Math.max(0, maxSeats - booked630);
+        const remaining400 = Math.max(0, maxSeats - booked400);
+        const remaining600 = Math.max(0, maxSeats - booked600);
 
-        console.log(`[Showtime] Live stats - 5:00 PM: ${booked500} booked, ${remaining500} left. 6:30 PM: ${booked630} booked, ${remaining630} left.`);
+        console.log(`[Showtime] Live stats - 4:00 PM: ${booked400} booked, ${remaining400} left. 6:00 PM: ${booked600} booked, ${remaining600} left.`);
 
-        const seatsText500 = document.getElementById('seatsLeft-500');
-        const seatsText630 = document.getElementById('seatsLeft-630');
+        const seatsText400 = document.getElementById('seatsLeft-400');
+        const seatsText600 = document.getElementById('seatsLeft-600');
 
-        if (seatsText500) {
-            if (remaining500 <= 0) {
-                seatsText500.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
-                document.getElementById('showTimeCard-500').style.opacity = '0.6';
+        if (seatsText400) {
+            if (remaining400 <= 0) {
+                seatsText400.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
+                const card = document.getElementById('showTimeCard-400');
+                if (card) card.style.opacity = '0.6';
             } else {
-                seatsText500.textContent = `${remaining500} seats left`;
-                document.getElementById('showTimeCard-500').style.opacity = '1';
+                seatsText400.textContent = `${remaining400} seats left`;
+                const card = document.getElementById('showTimeCard-400');
+                if (card) card.style.opacity = '1';
             }
         }
 
-        if (seatsText630) {
-            if (remaining630 <= 0) {
-                seatsText630.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
-                document.getElementById('showTimeCard-630').style.opacity = '0.6';
+        if (seatsText600) {
+            if (remaining600 <= 0) {
+                seatsText600.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
+                const card = document.getElementById('showTimeCard-600');
+                if (card) card.style.opacity = '0.6';
             } else {
-                seatsText630.textContent = `${remaining630} seats left`;
-                document.getElementById('showTimeCard-630').style.opacity = '1';
+                seatsText600.textContent = `${remaining600} seats left`;
+                const card = document.getElementById('showTimeCard-600');
+                if (card) card.style.opacity = '1';
             }
         }
     } catch (err) {
@@ -599,10 +603,10 @@ async function refreshShowCapacities() {
 function goToStep(stepNumber) {
     if (stepNumber === 2 && bookingState.step === 1) {
         // Validate showtime remaining seats before proceeding
-        const selectedShow = bookingState.showTime || '5:00 PM';
+        const selectedShow = bookingState.showTime || '4:00 PM';
         const qty = bookingState.tickets;
 
-        const seatsText = selectedShow === '5:00 PM' ? document.getElementById('seatsLeft-500') : document.getElementById('seatsLeft-630');
+        const seatsText = (selectedShow === '4:00 PM' || selectedShow === '5:00 PM') ? document.getElementById('seatsLeft-400') : document.getElementById('seatsLeft-600');
         if (seatsText) {
             const text = seatsText.textContent.toLowerCase();
             if (text.includes('housefull')) {
@@ -687,8 +691,8 @@ async function submitDetailsForm() {
 
     // Generate Booking ID if not already generated (sequential 1 to 140 format per show)
     if (!bookingState.bookingId) {
-        const showTimeVal = bookingState.showTime || '5:00 PM';
-        const showPrefix = showTimeVal === '6:30 PM' ? 'S2' : 'S1';
+        const showTimeVal = bookingState.showTime || '4:00 PM';
+        const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
 
         let bookings = [];
         try {
@@ -743,7 +747,7 @@ async function submitDetailsForm() {
     if (displayAmountPaid) displayAmountPaid.textContent = `₹${grandTotal.toFixed(2)}`;
 
     const displayShowTime = document.getElementById('displayShowTime');
-    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '5:00 PM';
+    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '4:00 PM';
 
     const displayBookingStatus = document.getElementById('displayBookingStatus');
     if (displayBookingStatus) {
@@ -967,7 +971,7 @@ async function saveBookingToDatabase() {
         name: bookingState.attendee.name,
         phone: bookingState.attendee.phone,
         profession: bookingState.attendee.profession === 'Film Maker' ? `Film Maker - ${bookingState.attendee.role}` : bookingState.attendee.profession,
-        category: (bookingState.showTime || '5:00 PM') + ' | ' + bookingState.attendee.profession + ' | ' + bookingState.attendee.role,
+        category: (bookingState.showTime || '4:00 PM') + ' | ' + bookingState.attendee.profession + ' | ' + bookingState.attendee.role,
         transactionId: bookingState.transactionId || '-',
         tickets: bookingState.tickets,
         totalAmount: bookingState.tickets * bookingState.ticketPrice,
@@ -1173,7 +1177,7 @@ async function renderAdminMetrics() {
 }
 
 function parseCategory(category) {
-    let showTime = '5:00 PM'; // Default fallback
+    let showTime = '4:00 PM'; // Default fallback
     let email = '-';
     let txnId = '-';
 
@@ -1181,7 +1185,7 @@ function parseCategory(category) {
         const parts = category.split(' | ');
         // New category format: showTime | profession | role | [Txn: txnId]
         // Older category format: showTime | email | [Txn: txnId]
-        if (parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+        if (parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
             showTime = parts[0];
             const part1 = parts[1] || '-';
             const part2 = parts[2] || '-';
@@ -1370,7 +1374,7 @@ async function approveBookingRequest(bookingId) {
 
     const parsed = parseCategory(targetBooking.category);
     const showTimeVal = parsed.showTime;
-    const showPrefix = showTimeVal === '6:30 PM' ? 'S2' : 'S1';
+    const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
 
     let allBookings = [];
     if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
@@ -1534,7 +1538,7 @@ function resendWhatsAppText(bookingId) {
         } else {
             const parsed = parseCategory(targetBooking.category);
             const showTimeVal = parsed.showTime;
-            const showPrefix = showTimeVal === '6:30 PM' ? 'S2' : 'S1';
+            const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
             
             let confirmedSeatsCount = 0;
             bookings.forEach(b => {
@@ -2492,7 +2496,7 @@ async function downloadPDFTicket() {
         { label: 'SEATS', val: `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`, x: 40, y: 180 },
         { label: 'VENUE', val: 'Chamundeshwari Studios', x: 220, y: 180 },
         { label: 'DATE', val: 'July 25, 2026', x: 40, y: 235 },
-        { label: 'TIME', val: `${bookingState.showTime || '5:00 PM'} onwards`, x: 220, y: 235 },
+        { label: 'TIME', val: `${bookingState.showTime || '4:00 PM'} onwards`, x: 220, y: 235 },
         { label: 'STATUS', val: isConfirmed ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: !isConfirmed, isGreen: isConfirmed }
     ];
 

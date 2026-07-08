@@ -979,14 +979,14 @@ section {
 }
 
 /* Showtime Cards Shine */
-#showTimeCard-500,
-#showTimeCard-630 {
+#showTimeCard-400,
+#showTimeCard-600 {
     position: relative;
     overflow: hidden;
 }
 
-#showTimeCard-500::after,
-#showTimeCard-630::after {
+#showTimeCard-400::after,
+#showTimeCard-600::after {
     content: '';
     position: absolute;
     top: 0;
@@ -1004,8 +1004,8 @@ section {
     z-index: 2;
 }
 
-#showTimeCard-500:hover::after,
-#showTimeCard-630:hover::after {
+#showTimeCard-400:hover::after,
+#showTimeCard-600:hover::after {
     left: 150%;
     transition: all 0.75s cubic-bezier(0.19, 1, 0.22, 1);
 }

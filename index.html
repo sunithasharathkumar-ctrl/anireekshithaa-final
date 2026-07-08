@@ -457,7 +457,7 @@
                                 <div class="detail-icon"><i class="fa-solid fa-calendar-days"></i></div>
                                 <div class="detail-txt">
                                     <h4>Date & Time</h4>
-                                    <p>Saturday, July 25th, 2026 | 5:00 PM onwards</p>
+                                    <p>Saturday, July 25th, 2026 | 4:00 PM & 6:00 PM</p>
                                 </div>
                             </div>
                             <div class="detail-row">
@@ -567,17 +567,17 @@
                     <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px;">Select Show Time:</span>
                     <div class="showtime-options" style="display: flex; gap: 12px; width: 100%;">
                         <label style="flex: 1; cursor: pointer; position: relative;">
-                            <input type="radio" name="showTimeSelect" value="5:00 PM" checked style="position: absolute; opacity: 0; pointer-events: none;" onchange="selectShowTime('5:00 PM')">
-                            <div id="showTimeCard-500" style="background: rgba(217, 35, 42, 0.08); border: 1px solid var(--red); padding: 12px; border-radius: 6px; text-align: center; transition: all 0.2s ease;">
-                                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-white);">5:00 PM</div>
-                                <div style="font-size: 0.70rem; color: var(--red-bright); font-weight: 600; margin-top: 4px;" id="seatsLeft-500">Checking seats...</div>
+                            <input type="radio" name="showTimeSelect" value="4:00 PM" checked style="position: absolute; opacity: 0; pointer-events: none;" onchange="selectShowTime('4:00 PM')">
+                            <div id="showTimeCard-400" style="background: rgba(217, 35, 42, 0.08); border: 1px solid var(--red); padding: 12px; border-radius: 6px; text-align: center; transition: all 0.2s ease;">
+                                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-white);">4:00 PM</div>
+                                <div style="font-size: 0.70rem; color: var(--red-bright); font-weight: 600; margin-top: 4px;" id="seatsLeft-400">Checking seats...</div>
                             </div>
                         </label>
                         <label style="flex: 1; cursor: pointer; position: relative;">
-                            <input type="radio" name="showTimeSelect" value="6:30 PM" style="position: absolute; opacity: 0; pointer-events: none;" onchange="selectShowTime('6:30 PM')">
-                            <div id="showTimeCard-630" style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); padding: 12px; border-radius: 6px; text-align: center; transition: all 0.2s ease;">
-                                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-white);">6:30 PM</div>
-                                <div style="font-size: 0.70rem; color: var(--text-muted); font-weight: 600; margin-top: 4px;" id="seatsLeft-630">Checking seats...</div>
+                            <input type="radio" name="showTimeSelect" value="6:00 PM" style="position: absolute; opacity: 0; pointer-events: none;" onchange="selectShowTime('6:00 PM')">
+                            <div id="showTimeCard-600" style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); padding: 12px; border-radius: 6px; text-align: center; transition: all 0.2s ease;">
+                                <div style="font-size: 1.15rem; font-weight: 700; color: var(--text-white);">6:00 PM</div>
+                                <div style="font-size: 0.70rem; color: var(--text-muted); font-weight: 600; margin-top: 4px;" id="seatsLeft-600">Checking seats...</div>
                             </div>
                         </label>
                     </div>
