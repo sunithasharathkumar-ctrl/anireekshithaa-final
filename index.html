@@ -26,7 +26,7 @@
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Styling -->
-    <link rel="stylesheet" href="styles.css?v=1.0.4">
+    <link rel="stylesheet" href="styles.css?v=1.0.5">
 </head>
 <body>
     <!-- Background Cinematic Overlay Particles/Glows -->
@@ -540,6 +540,8 @@
             <img class="lightbox-img" id="lightboxImg">
             <div class="lightbox-caption" id="lightboxCaption"></div>
         </div>
+    </div>
+
     <!-- CONTACT SUPPORT MODAL -->
     <div id="contactModal" class="modal contact-modal">
         <div class="modal-content" style="max-width: 420px; border: 1px solid var(--border-glass); background: rgba(18, 18, 24, 0.95); backdrop-filter: blur(15px); border-radius: 12px; padding: 25px; position: relative;">
@@ -1026,8 +1028,40 @@
     </div>
 
     <!-- Scripts -->
+    <script>
+        // Global helpers defined inline to avoid caching ReferenceErrors
+        window.openContactModal = function() {
+            const modal = document.getElementById('contactModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        };
+        window.closeContactModal = function() {
+            const modal = document.getElementById('contactModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        };
+        window.promptAdminAccess = function() {
+            const passkeyInput = document.getElementById('adminPasskey');
+            const passkeyError = document.getElementById('adminPasskeyError');
+            if (passkeyInput) passkeyInput.value = '';
+            if (passkeyError) passkeyError.style.display = 'none';
+            
+            const modal = document.getElementById('adminPasscodeModal');
+            if (modal) {
+                modal.classList.add('active');
+            }
+        };
+        window.closeAdminPasscode = function() {
+            const modal = document.getElementById('adminPasscodeModal');
+            if (modal) {
+                modal.classList.remove('active');
+            }
+        };
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js?v=1.0.4"></script>
+    <script src="app.js?v=1.0.5"></script>
 </body>
 </html>
