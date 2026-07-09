@@ -1422,6 +1422,24 @@ section {
     color: var(--red-dim);
 }
 
+.contact-trigger-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: inherit;
+    padding: 0;
+}
+
+.contact-trigger-btn:hover {
+    color: var(--red);
+}
+
 /* ==========================================================================
    MODALS FRAMEWORK & DIALOG SYSTEM
    ========================================================================== */

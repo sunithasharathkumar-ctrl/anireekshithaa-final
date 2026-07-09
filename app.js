@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initReviewCorner(); // Setup voice note and stars triggers
     initCountdown();
     initShareButtons();
+    initContactModal();
 });
 
 function initProfessionDropdown() {
@@ -495,6 +496,31 @@ function openBookingModal() {
 
 function closeBookingModal() {
     document.getElementById('bookingModal').classList.remove('active');
+}
+
+function openContactModal() {
+    const modal = document.getElementById('contactModal');
+    if (modal) {
+        modal.classList.add('active');
+    }
+}
+
+function closeContactModal() {
+    const modal = document.getElementById('contactModal');
+    if (modal) {
+        modal.classList.remove('active');
+    }
+}
+
+function initContactModal() {
+    const contactModal = document.getElementById('contactModal');
+    if (contactModal) {
+        contactModal.addEventListener('click', (e) => {
+            if (e.target === contactModal) {
+                closeContactModal();
+            }
+        });
+    }
 }
 
 function adjustTickets(amount) {
