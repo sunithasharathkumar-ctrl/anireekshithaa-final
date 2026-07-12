@@ -435,7 +435,7 @@ function closeLightbox() {
 let bookingState = {
     step: 1,
     tickets: 1,
-    ticketPrice: 100,
+    ticketPrice: 99,
     attendee: {
         name: '',
         phone: '',
@@ -453,7 +453,7 @@ function openBookingModal() {
     bookingState = {
         step: 1,
         tickets: 1,
-        ticketPrice: 100,
+        ticketPrice: 99,
         showTime: '4:00 PM', // Default showtime
         attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
@@ -480,7 +480,7 @@ function openBookingModal() {
 
     // Reset UI pricing displays
     document.getElementById('ticketQty').textContent = '1';
-    document.getElementById('summaryTotal').textContent = '₹100.00';
+    document.getElementById('summaryTotal').textContent = '₹99.00';
 
     // Reset showtime radio selections to 4:00 PM
     const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="4:00 PM"]');
@@ -903,28 +903,57 @@ function copyPayText(text, label) {
 
 function launchUpiApp(appName) {
     const upiId = '9986048332@ybl';
+    const payeeName = 'Anireekshithaa';
+    const totalAmount = (bookingState.tickets * bookingState.ticketPrice).toFixed(2);
+    const note = `Tickets for ${bookingState.tickets} seat(s)`;
     
-    // Copy UPI ID to clipboard
-    copyTextToClipboard(upiId).then(() => {
-        showToast(`UPI ID Copied! Opening App...`);
-        
-        // Schemes to open app home screen directly
-        const schemes = {
-            phonepe: 'phonepe://',
-            gpay: 'tez://',
-            paytm: 'paytm://',
-            bhim: 'bhim://'
-        };
-        
-        const scheme = schemes[appName] || 'upi://';
-        
-        setTimeout(() => {
-            window.location.href = scheme;
-        }, 600);
-    }).catch(err => {
-        console.error('Failed to copy UPI ID: ', err);
-        showToast('Failed to copy UPI ID. Please copy manually.', 'error');
-    });
+    // 1. Synchronously copy the UPI ID to the clipboard to ensure it works on all devices
+    let copied = false;
+    try {
+        const textArea = document.createElement("textarea");
+        textArea.value = upiId;
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        document.body.appendChild(textArea);
+        textArea.select();
+        copied = document.execCommand('copy');
+        document.body.removeChild(textArea);
+    } catch (err) {
+        console.warn('[UPI] Synchronous clipboard copy failed:', err);
+    }
+    
+    if (!copied) {
+        // Fallback to modern Clipboard API (async)
+        navigator.clipboard.writeText(upiId).catch(err => {
+            console.error('[UPI] Clipboard copy failed:', err);
+        });
+    }
+    
+    // 2. Detect if the user is on mobile
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    
+    if (!isMobile) {
+        // Desktop user: Clipboard copy is sufficient. Direct them to scan the QR.
+        showToast('UPI ID Copied! Please scan the QR code to complete payment.');
+        return;
+    }
+    
+    // Mobile user: Inform them we are opening the app and perform synchronous redirect
+    showToast('UPI ID Copied! Redirecting to app...');
+    
+    // Universal UPI pay deep links (which open the payment app and pre-fill details)
+    const params = `pa=${upiId}&pn=${encodeURIComponent(payeeName)}&am=${totalAmount}&cu=INR&tn=${encodeURIComponent(note)}`;
+    const schemes = {
+        phonepe: `phonepe://pay?${params}`,
+        gpay: `tez://upi/pay?${params}`,
+        paytm: `paytm://upi/pay?${params}`,
+        bhim: `upi://pay?${params}`
+    };
+    
+    const targetScheme = schemes[appName] || `upi://pay?${params}`;
+    
+    // Synchronous redirect prevents popup/navigation blocks in Safari/Chrome
+    window.location.href = targetScheme;
 }
 
 
