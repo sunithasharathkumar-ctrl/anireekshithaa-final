@@ -707,52 +707,6 @@
             </div>
             <!-- STEP 3: Booking Confirmation & Payment -->
             <div class="wizard-step-panel" id="stepPanel3" style="position: relative;">
-                <!-- Success Header -->
-                <div class="success-header" style="text-align: center; margin-bottom: 20px;">
-                    <div class="success-icon" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 12px auto;">
-                        <i class="fa-solid fa-clock" style="color: #f1c40f; font-size: 1.50rem;"></i>
-                    </div>
-                    <h3 style="color: var(--text-white); font-size: 1.4rem; font-family: 'Outfit', sans-serif; font-weight: 700; margin-bottom: 8px;">Booking Request Submitted</h3>
-                    <p style="color: var(--text-light); font-size: 0.85rem; line-height: 1.5; max-width: 420px; margin: 0 auto;">
-                        We have successfully recorded your details. To confirm your tickets, please make the online payment below. Our team will verify the payment and send the official ticket confirmation to your WhatsApp number.
-                    </p>
-                </div>
-
-                <!-- Booking Details Summary Card -->
-                <div class="booking-details-summary-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 16px; text-align: left; margin: 15px 0;">
-                    <h4 style="color: var(--text-white); font-size: 0.95rem; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Request Summary</h4>
-                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-light);">
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Booking ID:</span>
-                            <strong style="color: var(--text-white);" id="displayBookingId">-</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Customer Name:</span>
-                            <strong style="color: var(--text-white);" id="displayCustomerName">-</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Mobile Number:</span>
-                            <strong style="color: var(--text-white);" id="displayCustomerPhone">-</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Show Time:</span>
-                            <strong style="color: var(--text-white);" id="displayShowTime">-</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Number of Tickets:</span>
-                            <strong style="color: var(--text-white);" id="displayTicketsCount">-</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between;">
-                            <span>Amount Payable:</span>
-                            <strong style="color: var(--red-bright);" id="displayAmountPaid">-</strong>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
-                            <span>Status:</span>
-                            <span style="font-size: 0.75rem; background: rgba(241, 196, 15, 0.1); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;" id="displayBookingStatus">Pending Verification</span>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- UPI Details Section -->
                 <div class="upi-payment-details" style="background: rgba(255, 255, 255, 0.01); border: 1px solid var(--border-glass); border-radius: 8px; padding: 18px; text-align: left; display: flex; flex-direction: column; gap: 14px; margin-top: 5px;">
                     
@@ -797,6 +751,52 @@
                             <strong style="color: #2ecc71;">Desktop:</strong> Scan with any app.<br>
                             <strong style="color: #f1c40f;">Mobile:</strong> Screenshot & select 'Scan from Gallery'.
                         </span>
+                    </div>
+                </div>
+
+                <!-- Success Header -->
+                <div class="success-header" style="text-align: center; margin-top: 25px; margin-bottom: 15px;">
+                    <div class="success-icon" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;">
+                        <i class="fa-solid fa-clock" style="color: #f1c40f; font-size: 1.3rem;"></i>
+                    </div>
+                    <h3 style="color: var(--text-white); font-size: 1.3rem; font-family: 'Outfit', sans-serif; font-weight: 700; margin-bottom: 6px;">Booking Request Recorded</h3>
+                    <p style="color: var(--text-muted); font-size: 0.82rem; line-height: 1.5; max-width: 420px; margin: 0 auto;">
+                        Please complete the payment of the amount shown in the summary below. Once paid, send us the screenshot on WhatsApp to confirm your seats.
+                    </p>
+                </div>
+
+                <!-- Booking Details Summary Card -->
+                <div class="booking-details-summary-card" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border-glass); border-radius: 8px; padding: 16px; text-align: left; margin: 15px 0;">
+                    <h4 style="color: var(--text-white); font-size: 0.95rem; margin-bottom: 10px; font-family: 'Outfit', sans-serif; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 6px;">Request Summary</h4>
+                    <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-light);">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Booking ID:</span>
+                            <strong style="color: var(--text-white);" id="displayBookingId">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Customer Name:</span>
+                            <strong style="color: var(--text-white);" id="displayCustomerName">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Mobile Number:</span>
+                            <strong style="color: var(--text-white);" id="displayCustomerPhone">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Show Time:</span>
+                            <strong style="color: var(--text-white);" id="displayShowTime">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Number of Tickets:</span>
+                            <strong style="color: var(--text-white);" id="displayTicketsCount">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between;">
+                            <span>Amount Payable:</span>
+                            <strong style="color: var(--red-bright);" id="displayAmountPaid">-</strong>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
+                            <span>Status:</span>
+                            <span style="font-size: 0.75rem; background: rgba(241, 196, 15, 0.1); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;" id="displayBookingStatus">Pending Verification</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1046,6 +1046,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js?v=1.0.6"></script>
+    <script src="app.js?v=1.0.7"></script>
 </body>
 </html>
