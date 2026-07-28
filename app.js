@@ -304,7 +304,7 @@ function initVideoPlayer() {
    PREMIERE COUNTDOWN & SOCIAL SHARING CONTROLLERS
    ========================================================================== */
 function initCountdown() {
-    const targetDate = new Date('2026-07-25T17:00:00+05:30').getTime();
+    const targetDate = new Date('2026-08-09T10:30:00+05:30').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -454,7 +454,7 @@ function openBookingModal() {
         step: 1,
         tickets: 1,
         ticketPrice: 99,
-        showTime: '4:00 PM', // Default showtime
+        showTime: '10:30 AM', // Default showtime
         attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
         confirmed: false,
@@ -482,10 +482,10 @@ function openBookingModal() {
     document.getElementById('ticketQty').textContent = '1';
     document.getElementById('summaryTotal').textContent = '₹99.00';
 
-    // Reset showtime radio selections to 4:00 PM
-    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="4:00 PM"]');
+    // Reset showtime radio selections to 10:30 AM
+    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="10:30 AM"]');
     if (showTime400Radio) showTime400Radio.checked = true;
-    selectShowTime('4:00 PM');
+    selectShowTime('10:30 AM');
 
     // Refresh live show capacities
     refreshShowCapacities();
@@ -542,7 +542,7 @@ function selectShowTime(time) {
     const card400 = document.getElementById('showTimeCard-400');
     const card600 = document.getElementById('showTimeCard-600');
 
-    if (time === '4:00 PM' || time === '5:00 PM') {
+    if (time === '10:30 AM') {
         if (card400) {
             card400.style.border = '1px solid var(--red)';
             card400.style.background = 'rgba(217, 35, 42, 0.08)';
@@ -574,22 +574,22 @@ async function refreshShowCapacities() {
         bookings.forEach(b => {
             if (b.paidStatus === 'Rejected') return;
 
-            let showTime = '4:00 PM';
+            let showTime = '10:30 AM';
             if (b.category && b.category.includes(' | ')) {
                 const parts = b.category.split(' | ');
-                if (parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+                if (parts[0] === '10:30 AM' || parts[0] === '12:00 PM') {
                     showTime = parts[0];
                 }
             }
 
-            if (showTime === '4:00 PM' || showTime === '5:00 PM') {
+            if (showTime === '10:30 AM') {
                 booked400 += b.tickets;
-            } else if (showTime === '6:00 PM' || showTime === '6:30 PM') {
+            } else if (showTime === '12:00 PM') {
                 booked600 += b.tickets;
             }
         });
 
-        const maxSeats = 140;
+        const maxSeats = 100;
         const remaining400 = Math.max(0, maxSeats - booked400);
         const remaining600 = Math.max(0, maxSeats - booked600);
 
@@ -629,10 +629,10 @@ async function refreshShowCapacities() {
 function goToStep(stepNumber) {
     if (stepNumber === 2 && bookingState.step === 1) {
         // Validate showtime remaining seats before proceeding
-        const selectedShow = bookingState.showTime || '4:00 PM';
+        const selectedShow = bookingState.showTime || '10:30 AM';
         const qty = bookingState.tickets;
 
-        const seatsText = (selectedShow === '4:00 PM' || selectedShow === '5:00 PM') ? document.getElementById('seatsLeft-400') : document.getElementById('seatsLeft-600');
+        const seatsText = (selectedShow === '10:30 AM') ? document.getElementById('seatsLeft-400') : document.getElementById('seatsLeft-600');
         if (seatsText) {
             const text = seatsText.textContent.toLowerCase();
             if (text.includes('housefull')) {
@@ -1398,8 +1398,8 @@ function sendWhatsAppConfirmation(booking, ticketNumber) {
         `• *Ticket No*: ${ticketNumber}\n` +
         `• *Booking ID*: ${bookingId}\n` +
         `• *Seats*: ${tickets} Ticket${tickets > 1 ? 's' : ''}\n` +
-        `• *Venue*: Chamundeshwari Studios, Bangalore\n` +
-        `• *Date*: Saturday, July 25, 2026\n` +
+        `• *Venue*: Renukamba Digital Studio, Bangalore\n` +
+        `• *Date*: Sunday, August 9, 2026\n` +
         `• *Time*: ${showTimeVal}\n\n` +
         `Please display this Ticket Number or Booking ID at the counter to retrieve your physical passes. See you at the movies! 🎥`;
 
@@ -2551,9 +2551,9 @@ async function downloadPDFTicket() {
         { label: 'ATTENDEE', val: bookingState.attendee.name, x: 40, y: 125 },
         { label: 'BOOKING ID', val: bookingState.bookingId, x: 220, y: 125, isRed: true },
         { label: 'SEATS', val: `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`, x: 40, y: 180 },
-        { label: 'VENUE', val: 'Chamundeshwari Studios', x: 220, y: 180 },
-        { label: 'DATE', val: 'July 25, 2026', x: 40, y: 235 },
-        { label: 'TIME', val: `${bookingState.showTime || '4:00 PM'} onwards`, x: 220, y: 235 },
+        { label: 'VENUE', val: 'Renukamba Studio', x: 220, y: 180 },
+        { label: 'DATE', val: 'August 9, 2026', x: 40, y: 235 },
+        { label: 'TIME', val: `${bookingState.showTime || '10:30 AM'} onwards`, x: 220, y: 235 },
         { label: 'STATUS', val: isConfirmed ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: !isConfirmed, isGreen: isConfirmed }
     ];
 
