@@ -984,6 +984,7 @@ async function getBookingsFromSupabase() {
         const { data, error } = await supabaseClient
             .from('bookings')
             .select('*')
+            .not('booking_id', 'like', 'AVA-%')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -1672,7 +1673,7 @@ async function confirmResetDatabase() {
             const { data, error: err1 } = await supabaseClient
                 .from('bookings')
                 .delete()
-                .neq('name', '___non_existent___')
+                .not('booking_id', 'like', 'AVA-%')
                 .select();
 
             if (err1) throw err1;
@@ -1681,7 +1682,8 @@ async function confirmResetDatabase() {
                 // Check if there were records to begin with (so we don't block empty reset)
                 const { count } = await supabaseClient
                     .from('bookings')
-                    .select('*', { count: 'exact', head: true });
+                    .select('*', { count: 'exact', head: true })
+                    .not('booking_id', 'like', 'AVA-%');
                 if (count > 0) {
                     throw new Error("No rows were deleted from bookings. This is likely because the database Row Level Security (RLS) delete policy is missing. Please run the SQL command in Supabase SQL Editor: create policy \"Allow public delete to bookings\" on bookings for delete using (true);");
                 }
