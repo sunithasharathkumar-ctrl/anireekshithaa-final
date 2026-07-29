@@ -45,6 +45,7 @@
         <nav class="nav-links">
             <a href="#hero" class="nav-item active">Home</a>
             <a href="#teaser" class="nav-item">Teaser</a>
+            <a href="#songs" class="nav-item">Songs</a>
             <a href="#synopsis" class="nav-item">Synopsis</a>
             <a href="#crew" class="nav-item">Creative Vision</a>
             <a href="#feedback" class="nav-item">Review Corner</a>
@@ -63,6 +64,7 @@
         <div class="mobile-nav-links">
             <a href="#hero" class="mobile-nav-item">Home</a>
             <a href="#teaser" class="mobile-nav-item">Teaser</a>
+            <a href="#songs" class="mobile-nav-item">Songs</a>
             <a href="#synopsis" class="mobile-nav-item">Synopsis</a>
             <a href="#crew" class="mobile-nav-item">Creative Vision</a>
             <a href="#feedback" class="mobile-nav-item">Review Corner</a>
@@ -169,6 +171,100 @@
                         <a href="#" id="share-fb" target="_blank" class="share-btn share-fb">
                             <i class="fa-brands fa-facebook-f"></i> Facebook
                         </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Movie Songs Section -->
+        <style>
+            .songs-section {
+                padding: 80px 0;
+                background: rgba(10, 10, 12, 0.95);
+                position: relative;
+                border-bottom: 1px solid var(--border-glass);
+            }
+            .songs-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+                gap: 30px;
+                margin-top: 30px;
+            }
+            .song-card {
+                background: rgba(255, 255, 255, 0.02);
+                border: 1px solid var(--border-glass);
+                border-radius: 12px;
+                overflow: hidden;
+                transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            }
+            .song-card:hover {
+                transform: translateY(-5px);
+                border-color: var(--red);
+                box-shadow: 0 15px 40px rgba(217, 35, 42, 0.15);
+            }
+            .video-ratio {
+                position: relative;
+                padding-top: 56.25%;
+                width: 100%;
+            }
+            .video-ratio iframe {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border: 0;
+            }
+            .song-info {
+                padding: 20px;
+                text-align: left;
+            }
+            .song-title {
+                font-size: 1.25rem;
+                font-family: 'Outfit', sans-serif;
+                color: var(--text-white);
+                margin-bottom: 5px;
+            }
+            .song-subtitle {
+                font-size: 0.9rem;
+                color: var(--red-bright);
+                font-weight: 600;
+                margin-bottom: 15px;
+            }
+        </style>
+        <section id="songs" class="songs-section">
+            <div class="section-container">
+                <span class="section-tag red-gradient-text">SOUNDTRACK</span>
+                <h2 class="section-title text-glow">Movie Songs</h2>
+                
+                <div class="songs-grid">
+                    <!-- Song 1: Baredavararo -->
+                    <div class="song-card">
+                        <div class="video-ratio">
+                            <iframe src="https://www.youtube.com/embed/ojpX64CJfmM" title="Baredavararo" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        <div class="song-info">
+                            <h3 class="song-title">Baredavararo</h3>
+                            <p class="song-subtitle">ಬರೆದವರಾರೋ</p>
+                            <a href="https://www.youtube.com/watch?v=ojpX64CJfmM" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 8px 16px; border-radius: 6px; text-decoration: none; border: 1px solid var(--border-glass); background: transparent; color: var(--text-white); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                                <i class="fa-brands fa-youtube" style="color: #ff0000; font-size: 1.1rem;"></i> Watch on YouTube
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Song 2: Kolapureshi -->
+                    <div class="song-card">
+                        <div class="video-ratio">
+                            <iframe src="https://www.youtube.com/embed/mg7QrKzRZzQ" title="Kolapureshi" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+                        </div>
+                        <div class="song-info">
+                            <h3 class="song-title">Kolapureshi</h3>
+                            <p class="song-subtitle">ಕೊಲಾಪುರೇಶಿ</p>
+                            <a href="https://www.youtube.com/watch?v=mg7QrKzRZzQ" target="_blank" class="btn-secondary" style="display: inline-flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 8px 16px; border-radius: 6px; text-decoration: none; border: 1px solid var(--border-glass); background: transparent; color: var(--text-white); font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                                <i class="fa-brands fa-youtube" style="color: #ff0000; font-size: 1.1rem;"></i> Watch on YouTube
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1036,6 +1132,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js?v=1.1.3"></script>
+    <script src="app.js?v=1.1.4"></script>
 </body>
 </html>
