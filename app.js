@@ -304,7 +304,7 @@ function initVideoPlayer() {
    PREMIERE COUNTDOWN & SOCIAL SHARING CONTROLLERS
    ========================================================================== */
 function initCountdown() {
-    const targetDate = new Date('2026-08-09T10:30:00+05:30').getTime();
+    const targetDate = new Date('2026-08-09T11:00:00+05:30').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -454,7 +454,7 @@ function openBookingModal() {
         step: 1,
         tickets: 1,
         ticketPrice: 99,
-        showTime: '10:30 AM', // Default showtime
+        showTime: '11:00 AM', // Default showtime
         attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
         confirmed: false,
@@ -482,10 +482,10 @@ function openBookingModal() {
     document.getElementById('ticketQty').textContent = '1';
     document.getElementById('summaryTotal').textContent = '₹99.00';
 
-    // Reset showtime radio selections to 10:30 AM
-    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="10:30 AM"]');
+    // Reset showtime radio selections to 11:00 AM
+    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="11:00 AM"]');
     if (showTime400Radio) showTime400Radio.checked = true;
-    selectShowTime('10:30 AM');
+    selectShowTime('11:00 AM');
 
     // Refresh live show capacities
     refreshShowCapacities();
@@ -540,26 +540,9 @@ function selectShowTime(time) {
     console.log('[Showtime] Selected show time:', time);
 
     const card400 = document.getElementById('showTimeCard-400');
-    const card600 = document.getElementById('showTimeCard-600');
-
-    if (time === '10:30 AM') {
-        if (card400) {
-            card400.style.border = '1px solid var(--red)';
-            card400.style.background = 'rgba(217, 35, 42, 0.08)';
-        }
-        if (card600) {
-            card600.style.border = '1px solid var(--border-glass)';
-            card600.style.background = 'rgba(255, 255, 255, 0.01)';
-        }
-    } else {
-        if (card400) {
-            card400.style.border = '1px solid var(--border-glass)';
-            card400.style.background = 'rgba(255, 255, 255, 0.01)';
-        }
-        if (card600) {
-            card600.style.border = '1px solid var(--red)';
-            card600.style.background = 'rgba(217, 35, 42, 0.08)';
-        }
+    if (card400) {
+        card400.style.border = '1px solid var(--red)';
+        card400.style.background = 'rgba(217, 35, 42, 0.08)';
     }
 }
 
@@ -569,34 +552,29 @@ async function refreshShowCapacities() {
         const bookings = await getBookingsFromSupabase();
         
         let booked400 = 0;
-        let booked600 = 0;
 
         bookings.forEach(b => {
             if (b.paidStatus === 'Rejected') return;
 
-            let showTime = '10:30 AM';
+            let showTime = '11:00 AM';
             if (b.category && b.category.includes(' | ')) {
                 const parts = b.category.split(' | ');
-                if (parts[0] === '10:30 AM' || parts[0] === '12:00 PM') {
-                    showTime = parts[0];
+                if (parts[0] === '11:00 AM' || parts[0] === '10:30 AM' || parts[0] === '12:00 PM') {
+                    showTime = '11:00 AM';
                 }
             }
 
-            if (showTime === '10:30 AM') {
+            if (showTime === '11:00 AM') {
                 booked400 += b.tickets;
-            } else if (showTime === '12:00 PM') {
-                booked600 += b.tickets;
             }
         });
 
         const maxSeats = 100;
         const remaining400 = Math.max(0, maxSeats - booked400);
-        const remaining600 = Math.max(0, maxSeats - booked600);
 
-        console.log(`[Showtime] Live stats - 4:00 PM: ${booked400} booked, ${remaining400} left. 6:00 PM: ${booked600} booked, ${remaining600} left.`);
+        console.log(`[Showtime] Live stats - 11:00 AM: ${booked400} booked, ${remaining400} left.`);
 
         const seatsText400 = document.getElementById('seatsLeft-400');
-        const seatsText600 = document.getElementById('seatsLeft-600');
 
         if (seatsText400) {
             if (remaining400 <= 0) {
@@ -609,18 +587,6 @@ async function refreshShowCapacities() {
                 if (card) card.style.opacity = '1';
             }
         }
-
-        if (seatsText600) {
-            if (remaining600 <= 0) {
-                seatsText600.innerHTML = '<span style="color: #e74c3c; font-weight: bold;">HOUSEFULL</span>';
-                const card = document.getElementById('showTimeCard-600');
-                if (card) card.style.opacity = '0.6';
-            } else {
-                seatsText600.textContent = `${remaining600} seats left`;
-                const card = document.getElementById('showTimeCard-600');
-                if (card) card.style.opacity = '1';
-            }
-        }
     } catch (err) {
         console.error('[Showtime] Error refreshing capacities:', err);
     }
@@ -629,21 +595,21 @@ async function refreshShowCapacities() {
 function goToStep(stepNumber) {
     if (stepNumber === 2 && bookingState.step === 1) {
         // Validate showtime remaining seats before proceeding
-        const selectedShow = bookingState.showTime || '10:30 AM';
+        const selectedShow = bookingState.showTime || '11:00 AM';
         const qty = bookingState.tickets;
 
-        const seatsText = (selectedShow === '10:30 AM') ? document.getElementById('seatsLeft-400') : document.getElementById('seatsLeft-600');
+        const seatsText = document.getElementById('seatsLeft-400');
         if (seatsText) {
             const text = seatsText.textContent.toLowerCase();
             if (text.includes('housefull')) {
-                alert(`The ${selectedShow} show is currently housefull. Please choose the other showtime.`);
+                alert(`The show is currently housefull.`);
                 return;
             }
             const match = text.match(/(\d+)\s+seats?\s+left/);
             if (match) {
                 const remaining = parseInt(match[1]);
                 if (qty > remaining) {
-                    alert(`Only ${remaining} seats are available for the ${selectedShow} show. Please select a maximum of ${remaining} tickets or choose the other showtime.`);
+                    alert(`Only ${remaining} seats are available. Please select a maximum of ${remaining} tickets.`);
                     return;
                 }
             }
@@ -1233,7 +1199,7 @@ async function renderAdminMetrics() {
 }
 
 function parseCategory(category) {
-    let showTime = '4:00 PM'; // Default fallback
+    let showTime = '11:00 AM'; // Default fallback
     let email = '-';
     let txnId = '-';
 
@@ -1241,7 +1207,7 @@ function parseCategory(category) {
         const parts = category.split(' | ');
         // New category format: showTime | profession | role | [Txn: txnId]
         // Older category format: showTime | email | [Txn: txnId]
-        if (parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+        if (parts[0] === '11:00 AM' || parts[0] === '10:30 AM' || parts[0] === '12:00 PM' || parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
             showTime = parts[0];
             const part1 = parts[1] || '-';
             const part2 = parts[2] || '-';
