@@ -48,8 +48,8 @@
             <a href="#songs" class="nav-item">Songs</a>
             <a href="#synopsis" class="nav-item">Synopsis</a>
             <a href="#crew" class="nav-item">Creative Vision</a>
-            <a href="#feedback" class="nav-item">Review Corner</a>
             <a href="#screening" class="nav-item">Premiere</a>
+            <a href="#feedback" class="nav-item">Review Corner</a>
             <a href="#booking-section" class="nav-btn">Book Tickets</a>
         </nav>
         <!-- Mobile Menu Trigger -->
@@ -67,8 +67,8 @@
             <a href="#songs" class="mobile-nav-item">Songs</a>
             <a href="#synopsis" class="mobile-nav-item">Synopsis</a>
             <a href="#crew" class="mobile-nav-item">Creative Vision</a>
-            <a href="#feedback" class="mobile-nav-item">Review Corner</a>
             <a href="#screening" class="mobile-nav-item">Premiere</a>
+            <a href="#feedback" class="mobile-nav-item">Review Corner</a>
             <a href="#booking-section" class="mobile-nav-btn">Book Tickets</a>
         </div>
     </div>
@@ -441,6 +441,67 @@
             </div>
         </section>
 
+        <!-- Screening & Tickets Section -->
+        <section id="screening" class="screening-section">
+            <div class="section-container">
+                <div class="screening-box">
+                    <div class="screening-details">
+                        <span class="live-indicator"><span class="pulse-dot"></span> EXCLUSIVE PREMIERE</span>
+                        <h2 class="screening-title">Grand Screening</h2>
+                        
+                        <div class="detail-rows">
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                                <div class="detail-txt">
+                                     <h4>Date & Time</h4>
+                                     <p>Sunday, August 9th, 2026 | 11:00 AM</p>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="fa-solid fa-location-dot"></i></div>
+                                <div class="detail-txt">
+                                     <h4>Screening Location</h4>
+                                     <p>Renukamba Digital Studio, Lavanya Towers, 4th Main, 18th Cross Rd, Malleshwaram, Bengaluru, Karnataka 560055</p>
+                                </div>
+                            </div>
+                            <div class="detail-row">
+                                <div class="detail-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+                                <div class="detail-txt">
+                                     <h4>Ticket Price</h4>
+                                     <p>₹99 per seat</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Map Simulation -->
+                    <div class="map-simulation">
+                        <div class="map-header">
+                            <i class="fa-solid fa-map-location-dot"></i> Venue Map
+                        </div>
+                        <div class="map-frame">
+                            <div class="venue-marker">
+                                <i class="fa-solid fa-location-pin venue-pin"></i>
+                                <span class="venue-tooltip">Renukamba Digital Studio</span>
+                            </div>
+                        </div>
+                        <a href="https://maps.google.com/?q=Renukamba+Digital+Studio+Bengaluru" target="_blank" class="map-link-btn">
+                            <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Highlight booking section right here -->
+                <div class="booking-cta-block" id="booking-section">
+                    <h3>Secure Your Presence</h3>
+                    <p>Limited seats available. Book now to get your instant WhatsApp confirmation.</p>
+                    <button class="btn-primary btn-large" onclick="openBookingModal()">
+                        <i class="fa-solid fa-chair"></i> Book Tickets Now
+                    </button>
+                </div>
+            </div>
+        </section>
+
         <!-- Audience Feedback Section (Review Corner) -->
         <section id="feedback" class="feedback-section">
             <div class="section-container">
@@ -535,67 +596,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Screening & Tickets Section -->
-        <section id="screening" class="screening-section">
-            <div class="section-container">
-                <div class="screening-box">
-                    <div class="screening-details">
-                        <span class="live-indicator"><span class="pulse-dot"></span> EXCLUSIVE PREMIERE</span>
-                        <h2 class="screening-title">Grand Screening</h2>
-                        
-                        <div class="detail-rows">
-                            <div class="detail-row">
-                                <div class="detail-icon"><i class="fa-solid fa-calendar-days"></i></div>
-                                <div class="detail-txt">
-                                    <h4>Date & Time</h4>
-                                    <p>Sunday, August 9th, 2026 | 11:00 AM</p>
-                                </div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-icon"><i class="fa-solid fa-location-dot"></i></div>
-                                <div class="detail-txt">
-                                    <h4>Screening Location</h4>
-                                    <p>Renukamba Digital Studio, Lavanya Towers, 4th Main, 18th Cross Rd, Malleshwaram, Bengaluru, Karnataka 560055</p>
-                                </div>
-                            </div>
-                            <div class="detail-row">
-                                <div class="detail-icon"><i class="fa-solid fa-indian-rupee-sign"></i></div>
-                                <div class="detail-txt">
-                                    <h4>Ticket Price</h4>
-                                    <p>₹99 per seat</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Map Simulation -->
-                    <div class="map-simulation">
-                        <div class="map-header">
-                            <i class="fa-solid fa-map-location-dot"></i> Venue Map
-                        </div>
-                        <div class="map-frame">
-                            <div class="venue-marker">
-                                <i class="fa-solid fa-location-pin venue-pin"></i>
-                                <span class="venue-tooltip">Renukamba Digital Studio</span>
-                            </div>
-                        </div>
-                        <a href="https://maps.google.com/?q=Renukamba+Digital+Studio+Bengaluru" target="_blank" class="map-link-btn">
-                            <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
-                        </a>
-                    </div>
-                </div>
-
-                <!-- Highlight booking section right here -->
-                <div class="booking-cta-block" id="booking-section">
-                    <h3>Secure Your Presence</h3>
-                    <p>Limited seats available. Book now to get your instant WhatsApp confirmation.</p>
-                    <button class="btn-primary btn-large" onclick="openBookingModal()">
-                        <i class="fa-solid fa-chair"></i> Book Tickets Now
-                    </button>
                 </div>
             </div>
         </section>
@@ -1133,6 +1133,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js?v=1.1.5"></script>
+    <script src="app.js?v=1.1.6"></script>
 </body>
 </html>
