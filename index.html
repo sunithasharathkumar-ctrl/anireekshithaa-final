@@ -444,7 +444,16 @@
         <!-- Screening & Tickets Section -->
         <section id="screening" class="screening-section">
             <div class="section-container">
-                <div class="screening-box">
+                <!-- Highlight booking section right here -->
+                <div class="booking-cta-block" id="booking-section" style="margin-bottom: 50px;">
+                    <h3>Secure Your Presence</h3>
+                    <p>Limited seats available. Book now to get your instant WhatsApp confirmation.</p>
+                    <button class="btn-primary btn-large" onclick="openBookingModal()">
+                        <i class="fa-solid fa-chair"></i> Book Tickets Now
+                    </button>
+                </div>
+
+                <div class="screening-box" style="margin-bottom: 0;">
                     <div class="screening-details">
                         <span class="live-indicator"><span class="pulse-dot"></span> EXCLUSIVE PREMIERE</span>
                         <h2 class="screening-title">Grand Screening</h2>
@@ -489,15 +498,6 @@
                             <i class="fa-solid fa-diamond-turn-right"></i> Get Directions
                         </a>
                     </div>
-                </div>
-
-                <!-- Highlight booking section right here -->
-                <div class="booking-cta-block" id="booking-section">
-                    <h3>Secure Your Presence</h3>
-                    <p>Limited seats available. Book now to get your instant WhatsApp confirmation.</p>
-                    <button class="btn-primary btn-large" onclick="openBookingModal()">
-                        <i class="fa-solid fa-chair"></i> Book Tickets Now
-                    </button>
                 </div>
             </div>
         </section>
@@ -1133,6 +1133,6 @@
     </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="app.js?v=1.1.6"></script>
+    <script src="app.js?v=1.1.7"></script>
 </body>
 </html>
