@@ -704,7 +704,8 @@ async function submitDetailsForm() {
 
         const nextNum = countForShow + 1;
         const paddedNum = String(nextNum).padStart(3, '0');
-        bookingState.bookingId = `${showPrefix}-${paddedNum}`;
+        const randSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
+        bookingState.bookingId = `${showPrefix}-${paddedNum}-${randSuffix}`;
     }
     
     // Set status
