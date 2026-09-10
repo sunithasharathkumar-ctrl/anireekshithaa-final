@@ -25,3 +25,5 @@ supabase_sms_setup.md
 # Supabase local dev
 supabase/.branches/
 supabase/.temp/
+
+.vercel
