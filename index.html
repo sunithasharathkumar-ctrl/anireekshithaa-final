@@ -48,7 +48,6 @@
             <a href="#songs" class="nav-item">Songs</a>
             <a href="#synopsis" class="nav-item">Synopsis</a>
             <a href="#crew" class="nav-item">Creative Vision</a>
-            <a href="#feedback" class="nav-item">Review Corner</a>
         </nav>
         <!-- Mobile Menu Trigger -->
         <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Toggle Menu">
@@ -65,7 +64,6 @@
             <a href="#songs" class="mobile-nav-item">Songs</a>
             <a href="#synopsis" class="mobile-nav-item">Synopsis</a>
             <a href="#crew" class="mobile-nav-item">Creative Vision</a>
-            <a href="#feedback" class="mobile-nav-item">Review Corner</a>
         </div>
     </div>
 
@@ -435,103 +433,7 @@
             </div>
         </section>
 
-        <!-- Audience Feedback Section (Review Corner) -->
-        <section id="feedback" class="feedback-section">
-            <div class="section-container">
-                <span class="section-tag red-gradient-text">AUDIENCE ECHO</span>
-                <h2 class="section-title text-glow">Review Corner</h2>
-                <p class="section-desc">Watched the premiere of <strong>Anireekshithaa</strong>? Share your cinematic experience with us via text or voice note.</p>
 
-                <div class="feedback-grid">
-                    <!-- Text Feedback Card -->
-                    <div class="feedback-card text-card">
-                        <div class="card-header">
-                            <i class="fa-solid fa-pen-nib header-icon"></i>
-                            <h3>Written Review</h3>
-                        </div>
-                        <form id="textReviewForm" onsubmit="event.preventDefault(); submitTextReview();">
-                            <div class="form-row" style="display: flex; gap: 15px; margin-bottom: 20px;">
-                                <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                                    <label for="reviewName">Your Name <span class="required">*</span></label>
-                                    <input type="text" id="reviewName" placeholder="Enter name" required style="width: 100%;">
-                                </div>
-                                <div class="form-group" style="margin-bottom: 0;">
-                                    <label>Rating <span class="required">*</span></label>
-                                    <div class="rating-picker" id="ratingPicker" style="display: flex; gap: 6px; padding: 10px 0;">
-                                        <i class="fa-regular fa-star star-btn" data-value="1" style="color: var(--text-dark); font-size: 1.25rem; cursor: pointer; transition: var(--transition-smooth);"></i>
-                                        <i class="fa-regular fa-star star-btn" data-value="2" style="color: var(--text-dark); font-size: 1.25rem; cursor: pointer; transition: var(--transition-smooth);"></i>
-                                        <i class="fa-regular fa-star star-btn" data-value="3" style="color: var(--text-dark); font-size: 1.25rem; cursor: pointer; transition: var(--transition-smooth);"></i>
-                                        <i class="fa-regular fa-star star-btn" data-value="4" style="color: var(--text-dark); font-size: 1.25rem; cursor: pointer; transition: var(--transition-smooth);"></i>
-                                        <i class="fa-regular fa-star star-btn" data-value="5" style="color: var(--text-dark); font-size: 1.25rem; cursor: pointer; transition: var(--transition-smooth);"></i>
-                                    </div>
-                                    <input type="hidden" id="reviewRatingInput" value="" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="reviewText">Review Comments <span class="required">*</span></label>
-                                <textarea id="reviewText" placeholder="Write your thoughts about the story, acting, music, and cinematography..." rows="4" required style="width: 100%; resize: none;"></textarea>
-                            </div>
-                            <button type="submit" class="btn-primary btn-full">
-                                <i class="fa-solid fa-paper-plane"></i> Submit Written Review
-                            </button>
-                        </form>
-                    </div>
-
-                    <!-- Voice Note Feedback Card -->
-                    <div class="feedback-card voice-card" style="text-align: center;">
-                        <div class="card-header" style="text-align: left;">
-                            <i class="fa-solid fa-microphone header-icon"></i>
-                            <h3>Voice Review</h3>
-                        </div>
-                        <div class="voice-recorder-wrapper" style="padding: 10px 0;">
-                            <p class="voice-instructions" id="voiceInstructions" style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 25px;">Click the microphone button to start recording your feedback (Max 60s).</p>
-                            
-                            <!-- Visual Waveform representation -->
-                            <div class="waveform-container" id="waveformContainer" style="display: flex; justify-content: center; align-items: center; gap: 4px; height: 40px; margin-bottom: 20px;">
-                                <div class="wave-bar" style="width: 3px; height: 10px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 15px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 8px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 20px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 12px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 25px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 14px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 18px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 9px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                                <div class="wave-bar" style="width: 3px; height: 12px; background-color: var(--text-dark); border-radius: 2px; transition: height 0.15s ease;"></div>
-                            </div>
-
-                            <div class="timer-display" id="recordTimer" style="font-size: 1.8rem; font-weight: 700; color: var(--text-white); margin-bottom: 25px; font-family: monospace;">00:00</div>
-
-                            <div class="recorder-controls" style="margin-bottom: 20px; display: flex; justify-content: center; align-items: center; gap: 15px;">
-                                <button class="record-btn" id="recordBtn" aria-label="Record Voice Note" style="width: 70px; height: 70px; border-radius: 50%; background-color: #1a1b22; border: 1px solid var(--border-glass); color: var(--red-bright); font-size: 1.6rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: var(--transition-smooth); box-shadow: 0 4px 12px rgba(0,0,0,0.4);">
-                                    <i class="fa-solid fa-microphone microphone-icon"></i>
-                                </button>
-                                <button class="btn-danger" id="stopRecordBtn" style="display: none; padding: 12px 20px; font-size: 0.9rem;" onclick="stopVoiceRecording()">
-                                    <i class="fa-solid fa-square"></i> Stop
-                                </button>
-                            </div>
-
-                            <!-- Recorded audio playback element (Hidden until recorded) -->
-                            <div class="playback-container" id="playbackContainer" style="display: none; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border-glass);">
-                                <audio id="voicePlayback" controls style="width: 100%; margin-bottom: 20px; border-radius: 4px;"></audio>
-                                <div class="form-group" style="margin-top: 15px; text-align: left;">
-                                    <label for="voiceReviewName">Your Name <span class="required">*</span></label>
-                                    <input type="text" id="voiceReviewName" placeholder="Enter name" style="width: 100%;">
-                                </div>
-                                <div style="display: flex; gap: 10px;">
-                                    <button class="btn-secondary" style="flex: 1;" onclick="resetVoiceRecorder()">
-                                        <i class="fa-solid fa-rotate-left"></i> Re-record
-                                    </button>
-                                    <button class="btn-success" id="submitVoiceBtn" style="flex: 2;" onclick="submitVoiceReview()">
-                                        <i class="fa-solid fa-cloud-arrow-up"></i> Submit Voice Review
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
     </main>
 
     <!-- Footer -->
@@ -549,7 +451,6 @@
                 <a href="#teaser">Teaser</a>
                 <a href="#synopsis">Synopsis</a>
                 <a href="#crew">Crew</a>
-                <a href="#feedback">Review Corner</a>
                 <a href="javascript:void(0)" class="contact-trigger-btn" onclick="openContactModal()">
                     <i class="fa-solid fa-phone"></i> Contact Support
                 </a>
