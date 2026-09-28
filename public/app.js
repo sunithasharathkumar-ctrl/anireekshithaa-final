@@ -304,7 +304,7 @@ function initVideoPlayer() {
    PREMIERE COUNTDOWN & SOCIAL SHARING CONTROLLERS
    ========================================================================== */
 function initCountdown() {
-    const targetDate = new Date('2026-08-23T11:00:00+05:30').getTime();
+    const targetDate = new Date('2026-10-11T11:00:00+05:30').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -569,7 +569,7 @@ async function refreshShowCapacities() {
             }
         });
 
-        const maxSeats = 100;
+        const maxSeats = 160;
         const remaining400 = Math.max(0, maxSeats - booked400);
 
         console.log(`[Showtime] Live stats - 11:00 AM: ${booked400} booked, ${remaining400} left.`);
@@ -1365,8 +1365,8 @@ function sendWhatsAppConfirmation(booking, ticketNumber) {
         `• *Ticket No*: ${ticketNumber}\n` +
         `• *Booking ID*: ${bookingId}\n` +
         `• *Seats*: ${tickets} Ticket${tickets > 1 ? 's' : ''}\n` +
-        `• *Venue*: Renukamba Digital Studio, Bangalore\n` +
-        `• *Date*: Sunday, August 23, 2026\n` +
+        `• *Venue*: Cine Galaxy\n` +
+        `• *Date*: Sunday, October 11, 2026\n` +
         `• *Time*: ${showTimeVal}\n\n` +
         `Please display this Ticket Number or Booking ID at the counter to retrieve your physical passes. See you at the movies! 🎥`;
 
@@ -2518,8 +2518,8 @@ async function downloadPDFTicket() {
         { label: 'ATTENDEE', val: bookingState.attendee.name, x: 40, y: 125 },
         { label: 'BOOKING ID', val: bookingState.bookingId, x: 220, y: 125, isRed: true },
         { label: 'SEATS', val: `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`, x: 40, y: 180 },
-        { label: 'VENUE', val: 'Renukamba Studio', x: 220, y: 180 },
-        { label: 'DATE', val: 'August 23, 2026', x: 40, y: 235 },
+        { label: 'VENUE', val: 'Cine Galaxy', x: 220, y: 180 },
+        { label: 'DATE', val: 'October 11, 2026', x: 40, y: 235 },
         { label: 'TIME', val: `${bookingState.showTime || '11:00 AM'} onwards`, x: 220, y: 235 },
         { label: 'STATUS', val: isConfirmed ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: !isConfirmed, isGreen: isConfirmed }
     ];
