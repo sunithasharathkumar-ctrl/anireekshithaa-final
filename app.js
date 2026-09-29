@@ -304,7 +304,7 @@ function initVideoPlayer() {
    PREMIERE COUNTDOWN & SOCIAL SHARING CONTROLLERS
    ========================================================================== */
 function initCountdown() {
-    const targetDate = new Date('2026-10-11T11:00:00+05:30').getTime();
+    const targetDate = new Date('2026-10-11T10:00:00+05:30').getTime();
     
     function updateCountdown() {
         const now = new Date().getTime();
@@ -454,7 +454,7 @@ function openBookingModal() {
         step: 1,
         tickets: 1,
         ticketPrice: 99,
-        showTime: '11:00 AM', // Default showtime
+        showTime: '10:00 AM', // Default showtime
         attendee: { name: '', phone: '', profession: '', role: '' },
         bookingId: '',
         confirmed: false,
@@ -482,10 +482,10 @@ function openBookingModal() {
     document.getElementById('ticketQty').textContent = '1';
     document.getElementById('summaryTotal').textContent = '₹99.00';
 
-    // Reset showtime radio selections to 11:00 AM
-    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="11:00 AM"]');
+    // Reset showtime radio selections to 10:00 AM
+    const showTime400Radio = document.querySelector('input[name="showTimeSelect"][value="10:00 AM"]');
     if (showTime400Radio) showTime400Radio.checked = true;
-    selectShowTime('11:00 AM');
+    selectShowTime('10:00 AM');
 
     // Refresh live show capacities
     refreshShowCapacities();
@@ -556,23 +556,23 @@ async function refreshShowCapacities() {
         bookings.forEach(b => {
             if (b.paidStatus === 'Rejected') return;
 
-            let showTime = '11:00 AM';
+            let showTime = '10:00 AM';
             if (b.category && b.category.includes(' | ')) {
                 const parts = b.category.split(' | ');
-                if (parts[0] === '11:00 AM' || parts[0] === '10:30 AM' || parts[0] === '12:00 PM') {
-                    showTime = '11:00 AM';
+                if (parts[0] === '10:00 AM' || parts[0] === '11:00 AM' || parts[0] === '10:30 AM' || parts[0] === '12:00 PM') {
+                    showTime = '10:00 AM';
                 }
             }
 
-            if (showTime === '11:00 AM') {
-                booked400 += b.tickets;
+            if (showTime === '10:00 AM' || showTime === '11:00 AM') {
+                booked400 += parseInt(b.tickets) || 0;
             }
         });
 
         const maxSeats = 160;
         const remaining400 = Math.max(0, maxSeats - booked400);
 
-        console.log(`[Showtime] Live stats - 11:00 AM: ${booked400} booked, ${remaining400} left.`);
+        console.log(`[Showtime] Live stats - 10:00 AM: ${booked400} booked, ${remaining400} left.`);
 
         const seatsText400 = document.getElementById('seatsLeft-400');
 
@@ -595,7 +595,7 @@ async function refreshShowCapacities() {
 function goToStep(stepNumber) {
     if (stepNumber === 2 && bookingState.step === 1) {
         // Validate showtime remaining seats before proceeding
-        const selectedShow = bookingState.showTime || '11:00 AM';
+        const selectedShow = bookingState.showTime || '10:00 AM';
         const qty = bookingState.tickets;
 
         const seatsText = document.getElementById('seatsLeft-400');
@@ -683,7 +683,7 @@ async function submitDetailsForm() {
 
     // Generate Booking ID if not already generated (sequential 1 to 140 format per show)
     if (!bookingState.bookingId) {
-        const showTimeVal = bookingState.showTime || '4:00 PM';
+        const showTimeVal = bookingState.showTime || '10:00 AM';
         const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
 
         let bookings = [];
@@ -697,7 +697,7 @@ async function submitDetailsForm() {
         let countForShow = 0;
         bookings.forEach(b => {
             const parsed = parseCategory(b.category);
-            if (parsed.showTime === showTimeVal) {
+            if (parsed.showTime === showTimeVal || parsed.showTime === '11:00 AM') {
                 countForShow++;
             }
         });
@@ -740,7 +740,7 @@ async function submitDetailsForm() {
     if (displayAmountPaid) displayAmountPaid.textContent = `₹${grandTotal.toFixed(2)}`;
 
     const displayShowTime = document.getElementById('displayShowTime');
-    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '4:00 PM';
+    if (displayShowTime) displayShowTime.textContent = bookingState.showTime || '10:00 AM';
 
     const displayBookingStatus = document.getElementById('displayBookingStatus');
     if (displayBookingStatus) {
@@ -928,9 +928,36 @@ function launchUpiApp(appName) {
 /* ==========================================================================
    DATABASE CONTROLLER (LOCAL BACKUP + SUPABASE LIVE DB)
    ========================================================================== */
+const initialSeedBookings = [
+    {
+        bookingId: 'S1-002-N2L',
+        name: 'Audience Member',
+        phone: '9986048332',
+        profession: 'Public Audience',
+        category: '10:00 AM | Public Audience | -',
+        transactionId: '-',
+        tickets: 1,
+        totalAmount: 99.00,
+        paidStatus: 'Pending Verification',
+        bookingDate: '30 Sep 2026, 10:00 AM'
+    }
+];
+
 function getBookings() {
     const stored = localStorage.getItem('anireekshithaa_bookings');
-    const bookings = stored ? JSON.parse(stored) : [];
+    let bookings = stored ? JSON.parse(stored) : null;
+
+    if (!bookings || !Array.isArray(bookings) || bookings.length === 0) {
+        bookings = [...initialSeedBookings];
+        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
+    } else {
+        const exists = bookings.some(b => b.bookingId === 'S1-002-N2L');
+        if (!exists) {
+            bookings.push(initialSeedBookings[0]);
+            localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
+        }
+    }
+
     const dummyIds = ['ANR-4512-Y', 'ANR-8921-A', 'ANR-3401-G', 'ANR-7112-L', 'ANR-1250-F'];
     return bookings
         .filter(b => !dummyIds.includes(b.bookingId))
@@ -984,6 +1011,11 @@ async function getBookingsFromSupabase() {
                 };
             });
 
+        // Ensure S1-002-N2L is included in list if not present
+        if (!list.some(b => b.bookingId === 'S1-002-N2L')) {
+            list.push(initialSeedBookings[0]);
+        }
+
         // Keep local cache fully synchronized
         localStorage.setItem('anireekshithaa_bookings', JSON.stringify(list));
         console.log(`[Supabase] Successfully loaded and synchronized ${list.length} records.`);
@@ -1001,7 +1033,7 @@ async function saveBookingToDatabase() {
         name: bookingState.attendee.name,
         phone: bookingState.attendee.phone,
         profession: bookingState.attendee.profession === 'Film Maker' ? `Film Maker - ${bookingState.attendee.role}` : bookingState.attendee.profession,
-        category: (bookingState.showTime || '4:00 PM') + ' | ' + bookingState.attendee.profession + ' | ' + bookingState.attendee.role,
+        category: (bookingState.showTime || '10:00 AM') + ' | ' + bookingState.attendee.profession + ' | ' + bookingState.attendee.role,
         transactionId: bookingState.transactionId || '-',
         tickets: bookingState.tickets,
         totalAmount: bookingState.tickets * bookingState.ticketPrice,
@@ -1146,7 +1178,7 @@ async function renderAdminMetrics() {
 }
 
 function parseCategory(category) {
-    let showTime = '11:00 AM'; // Default fallback
+    let showTime = '10:00 AM'; // Default fallback
     let email = '-';
     let txnId = '-';
 
@@ -1154,7 +1186,7 @@ function parseCategory(category) {
         const parts = category.split(' | ');
         // New category format: showTime | profession | role | [Txn: txnId]
         // Older category format: showTime | email | [Txn: txnId]
-        if (parts[0] === '11:00 AM' || parts[0] === '10:30 AM' || parts[0] === '12:00 PM' || parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
+        if (parts[0] === '10:00 AM' || parts[0] === '11:00 AM' || parts[0] === '10:30 AM' || parts[0] === '12:00 PM' || parts[0] === '4:00 PM' || parts[0] === '6:00 PM' || parts[0] === '5:00 PM' || parts[0] === '6:30 PM') {
             showTime = parts[0];
             const part1 = parts[1] || '-';
             const part2 = parts[2] || '-';
@@ -2389,7 +2421,7 @@ async function downloadPDFTicket() {
         { label: 'SEATS', val: `${bookingState.tickets} Seat${bookingState.tickets > 1 ? 's' : ''}`, x: 40, y: 180 },
         { label: 'VENUE', val: 'Cine Galaxy', x: 220, y: 180 },
         { label: 'DATE', val: 'October 11, 2026', x: 40, y: 235 },
-        { label: 'TIME', val: `${bookingState.showTime || '11:00 AM'} onwards`, x: 220, y: 235 },
+        { label: 'TIME', val: `${bookingState.showTime || '10:00 AM'} onwards`, x: 220, y: 235 },
         { label: 'STATUS', val: isConfirmed ? 'CONFIRMED' : 'PENDING VERIFICATION', x: 40, y: 290, isYellow: !isConfirmed, isGreen: isConfirmed }
     ];
 
