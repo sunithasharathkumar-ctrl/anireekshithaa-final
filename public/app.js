@@ -931,14 +931,17 @@ function launchUpiApp(appName) {
 function getBookings() {
     const stored = localStorage.getItem('anireekshithaa_bookings');
     const bookings = stored ? JSON.parse(stored) : [];
-    return bookings.map(b => {
-        if (b.paidStatus === 'PENDING' || b.paidStatus === 'PENDING_VERIFICATION') {
-            b.paidStatus = 'Pending Verification';
-        } else if (b.paidStatus === 'SUCCESSFUL') {
-            b.paidStatus = 'Confirmed';
-        }
-        return b;
-    });
+    const dummyIds = ['ANR-4512-Y', 'ANR-8921-A', 'ANR-3401-G', 'ANR-7112-L', 'ANR-1250-F'];
+    return bookings
+        .filter(b => !dummyIds.includes(b.bookingId))
+        .map(b => {
+            if (b.paidStatus === 'PENDING' || b.paidStatus === 'PENDING_VERIFICATION') {
+                b.paidStatus = 'Pending Verification';
+            } else if (b.paidStatus === 'SUCCESSFUL') {
+                b.paidStatus = 'Confirmed';
+            }
+            return b;
+        });
 }
 
 async function getBookingsFromSupabase() {
@@ -956,26 +959,30 @@ async function getBookingsFromSupabase() {
 
         if (error) throw error;
 
+        const dummyIds = ['ANR-4512-Y', 'ANR-8921-A', 'ANR-3401-G', 'ANR-7112-L', 'ANR-1250-F'];
+
         // Map properties and normalize status
-        const list = (data || []).map(b => {
-            let status = b.paid_status;
-            if (status === 'PENDING' || status === 'PENDING_VERIFICATION') {
-                status = 'Pending Verification';
-            } else if (status === 'SUCCESSFUL') {
-                status = 'Confirmed';
-            }
-            return {
-                bookingId: b.booking_id,
-                name: b.name,
-                phone: b.phone,
-                profession: b.profession,
-                category: b.category,
-                tickets: b.tickets,
-                totalAmount: b.total_amount,
-                paidStatus: status,
-                bookingDate: b.booking_date
-            };
-        });
+        const list = (data || [])
+            .filter(b => !dummyIds.includes(b.booking_id))
+            .map(b => {
+                let status = b.paid_status;
+                if (status === 'PENDING' || status === 'PENDING_VERIFICATION') {
+                    status = 'Pending Verification';
+                } else if (status === 'SUCCESSFUL') {
+                    status = 'Confirmed';
+                }
+                return {
+                    bookingId: b.booking_id,
+                    name: b.name,
+                    phone: b.phone,
+                    profession: b.profession,
+                    category: b.category,
+                    tickets: b.tickets,
+                    totalAmount: b.total_amount,
+                    paidStatus: status,
+                    bookingDate: b.booking_date
+                };
+            });
 
         // Keep local cache fully synchronized
         localStorage.setItem('anireekshithaa_bookings', JSON.stringify(list));
@@ -1046,69 +1053,8 @@ async function saveBookingToDatabase() {
     }
 }
 
-// Generate pre-loaded sample database values to showcase beautiful dashboard metrics immediately (Local Only)
 function loadSampleData() {
-    const currentBookings = getBookings();
-    if (currentBookings.length === 0) {
-        const dummyRecords = [
-            {
-                bookingId: 'ANR-4512-Y',
-                name: 'Kiran Hegde',
-                phone: '9845210214',
-                profession: 'Confirmed | Ticket: S1-001, S1-002',
-                category: 'kiran.hegde@gmail.com',
-                tickets: 2,
-                totalAmount: 200,
-                paidStatus: 'Confirmed',
-                bookingDate: '06 Jun 2026, 05:20 PM'
-            },
-            {
-                bookingId: 'ANR-8921-A',
-                name: 'Rohit Sharma',
-                phone: '7022145896',
-                profession: 'Audience',
-                category: 'rohit.sharma@yahoo.com',
-                tickets: 1,
-                totalAmount: 100,
-                paidStatus: 'Pending Verification',
-                bookingDate: '06 Jun 2026, 03:10 PM'
-            },
-            {
-                bookingId: 'ANR-3401-G',
-                name: 'Pooja Bhat',
-                phone: '8095412356',
-                profession: 'Confirmed | Ticket: S1-003, S1-004, S1-005, S1-006',
-                category: 'pooja.bhat@gmail.com',
-                tickets: 4,
-                totalAmount: 400,
-                paidStatus: 'Confirmed',
-                bookingDate: '05 Jun 2026, 08:45 PM'
-            },
-            {
-                bookingId: 'ANR-7112-L',
-                name: 'Suhas K',
-                phone: '9900885522',
-                profession: 'Audience',
-                category: 'suhas.k@outlook.com',
-                tickets: 2,
-                totalAmount: 200,
-                paidStatus: 'Pending Verification',
-                bookingDate: '05 Jun 2026, 11:15 AM'
-            },
-            {
-                bookingId: 'ANR-1250-F',
-                name: 'Anjali Shetty',
-                phone: '8884442211',
-                profession: 'Confirmed | Ticket: S1-007',
-                category: 'anjali.shetty@gmail.com',
-                tickets: 1,
-                totalAmount: 100,
-                paidStatus: 'Confirmed',
-                bookingDate: '04 Jun 2026, 06:12 PM'
-            }
-        ];
-        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(dummyRecords));
-    }
+    // Disabled dummy sample data auto-loader so only real audience bookings are stored
 }
 
 /* ==========================================================================
@@ -2348,78 +2294,8 @@ async function deleteFeedbackById(id) {
     }
 }
 
-// Dummy review loader - stores to Local Storage only to pre-populate local fallback dashboard immediately
 function loadSampleFeedbacks() {
-    const currentFeedbacks = getFeedbacks();
-    if (currentFeedbacks.length === 0) {
-        const mockBlob = generateMockAudioBlob();
-        blobToBase64(mockBlob)
-            .then(base64Data => {
-                const sampleReviews = [
-                    {
-                        id: 'REV-9874-T',
-                        type: 'TEXT',
-                        name: 'Aravind Shastry',
-                        rating: 5,
-                        comment: 'Anireekshithaa is a masterpiece of tension! The sound design in the last 5 minutes had me on the edge of my seat. Sharath Raj\'s performance was top-tier.',
-                        audioData: '',
-                        duration: '',
-                        date: '06 Jun 2026, 06:15 PM'
-                    },
-                    {
-                        id: 'REV-2541-T',
-                        type: 'TEXT',
-                        name: 'Deepa Rao',
-                        rating: 4,
-                        comment: 'Very well shot. The director\'s use of colors (red and blue hues) really represented Vikram\'s collapsing psyche. Kudos to the DOP Rajesh Varma!',
-                        audioData: '',
-                        duration: '',
-                        date: '06 Jun 2026, 04:30 PM'
-                    },
-                    {
-                        id: 'REV-1036-V',
-                        type: 'VOICE',
-                        name: 'Harish Kumar',
-                        rating: 0,
-                        comment: 'Voice Note review (00:03)',
-                        audioData: base64Data,
-                        duration: '00:03',
-                        date: '05 Jun 2026, 09:20 PM'
-                    }
-                ];
-                localStorage.setItem('anireekshithaa_feedbacks', JSON.stringify(sampleReviews));
-
-                if (document.getElementById('adminDashboardModal').classList.contains('active')) {
-                    renderReviewsTable();
-                }
-            })
-            .catch(err => {
-                console.error('Failed to encode sample voice review:', err);
-                const sampleReviewsText = [
-                    {
-                        id: 'REV-9874-T',
-                        type: 'TEXT',
-                        name: 'Aravind Shastry',
-                        rating: 5,
-                        comment: 'Anireekshithaa is a masterpiece of tension! The sound design in the last 5 minutes had me on the edge of my seat. Sharath Raj\'s performance was top-tier.',
-                        audioData: '',
-                        duration: '',
-                        date: '06 Jun 2026, 06:15 PM'
-                    },
-                    {
-                        id: 'REV-2541-T',
-                        type: 'TEXT',
-                        name: 'Deepa Rao',
-                        rating: 4,
-                        comment: 'Very well shot. The director\'s use of colors (red and blue hues) really represented Vikram\'s collapsing psyche. Kudos to the DOP Rajesh Varma!',
-                        audioData: '',
-                        duration: '',
-                        date: '06 Jun 2026, 04:30 PM'
-                    }
-                ];
-                localStorage.setItem('anireekshithaa_feedbacks', JSON.stringify(sampleReviewsText));
-            });
-    }
+    // Disabled sample feedbacks auto-loader
 }
 
 // Global modal click-outside and keydown closures
