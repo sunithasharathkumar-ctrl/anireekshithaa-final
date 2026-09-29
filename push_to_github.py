@@ -16,7 +16,7 @@ def run(args):
     return res.returncode
 
 run(["add", "."])
-run(["commit", "-m", "Update screening details for Oct 11th Cine Galaxy premiere"])
+run(["commit", "-m", "Move Book Tickets button to Hero section under countdown timer"])
 code = run(["push", "origin", "main"])
 if code == 0:
     print("SUCCESSFULLY_PUSHED_TO_GITHUB")

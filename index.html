@@ -106,8 +106,11 @@
                     </div>
                 </div>
                 
-                <div class="hero-ctas animate-scale-up">
-                    <a href="#teaser" class="btn-primary">
+                <div class="hero-ctas animate-scale-up" style="display: flex; gap: 15px; justify-content: center; align-items: center; flex-wrap: wrap; margin-top: 15px;">
+                    <button class="btn-primary btn-large" onclick="openBookingModal()" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; cursor: pointer; box-shadow: 0 0 20px rgba(217, 35, 42, 0.4);">
+                        <i class="fa-solid fa-chair"></i> Book Tickets Now
+                    </button>
+                    <a href="#teaser" class="btn-secondary btn-large" style="display: inline-flex; align-items: center; gap: 8px; text-decoration: none; padding: 14px 28px; border-radius: 8px; border: 1px solid var(--border-glass); color: var(--text-white); font-weight: 600;">
                         <i class="fa-solid fa-play"></i> Watch Teaser
                     </a>
                 </div>
@@ -440,15 +443,6 @@
         <!-- Screening & Tickets Section -->
         <section id="screening" class="screening-section">
             <div class="section-container">
-                <!-- Highlight booking section right here -->
-                <div class="booking-cta-block" id="booking-section" style="margin-bottom: 50px;">
-                    <h3>Secure Your Presence</h3>
-                    <p>Limited seats available (Total 160 Seats). Book now to get your instant WhatsApp confirmation.</p>
-                    <button class="btn-primary btn-large" onclick="openBookingModal()">
-                        <i class="fa-solid fa-chair"></i> Book Tickets Now
-                    </button>
-                </div>
-
                 <div class="screening-box" style="margin-bottom: 0;">
                     <div class="screening-details">
                         <span class="live-indicator"><span class="pulse-dot"></span> EXCLUSIVE PREMIERE</span>
