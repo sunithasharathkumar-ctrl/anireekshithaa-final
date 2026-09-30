@@ -950,7 +950,7 @@ function launchUpiApp(appName) {
 /* ==========================================================================
    DATABASE CONTROLLER (LOCAL BACKUP + SUPABASE LIVE DB)
    ========================================================================== */
-const STORAGE_KEY = 'anireekshithaa_bookings_oct11_v4';
+const STORAGE_KEY = 'anireekshithaa_bookings_oct11_v5';
 
 const initialSeedBookings = [
     {
@@ -969,7 +969,7 @@ const initialSeedBookings = [
 
 // Automatically purge legacy storage keys from past screenings so all devices start clean
 function purgeLegacyStorage() {
-    const legacyKeys = ['anireekshithaa_bookings', 'anireekshithaa_bookings_v2', 'anireekshithaa_bookings_v3'];
+    const legacyKeys = ['anireekshithaa_bookings', 'anireekshithaa_bookings_v2', 'anireekshithaa_bookings_v3', 'anireekshithaa_bookings_oct11_v4'];
     legacyKeys.forEach(key => {
         try {
             if (localStorage.getItem(key)) {
@@ -980,6 +980,27 @@ function purgeLegacyStorage() {
     });
 }
 purgeLegacyStorage();
+
+// Deduplicate bookings by Phone + Name + Booking Date for Pending records
+function deduplicateBookings(bookingsList) {
+    const seen = new Set();
+    const result = [];
+    for (const b of bookingsList) {
+        const phoneClean = (b.phone || '').trim();
+        const nameClean = (b.name || '').trim().toLowerCase();
+        const key = (b.paidStatus === 'Pending Verification' || b.paidStatus === 'PENDING')
+            ? `${phoneClean}_${nameClean}_${b.bookingDate}`
+            : b.bookingId;
+
+        if (!seen.has(key)) {
+            seen.add(key);
+            result.push(b);
+        } else {
+            console.log(`[Deduplication] Filtered out duplicate entry: ${b.bookingId} (${b.name})`);
+        }
+    }
+    return result;
+}
 
 function getBookings() {
     purgeLegacyStorage();
@@ -998,7 +1019,7 @@ function getBookings() {
     }
 
     const dummyIds = ['ANR-4512-Y', 'ANR-8921-A', 'ANR-3401-G', 'ANR-7112-L', 'ANR-1250-F'];
-    return bookings
+    const filtered = bookings
         .filter(b => !dummyIds.includes(b.bookingId))
         .map(b => {
             if (b.paidStatus === 'PENDING' || b.paidStatus === 'PENDING_VERIFICATION') {
@@ -1008,6 +1029,8 @@ function getBookings() {
             }
             return b;
         });
+
+    return deduplicateBookings(filtered);
 }
 
 async function getBookingsFromSupabase() {
@@ -1028,7 +1051,7 @@ async function getBookingsFromSupabase() {
         const dummyIds = ['ANR-4512-Y', 'ANR-8921-A', 'ANR-3401-G', 'ANR-7112-L', 'ANR-1250-F'];
 
         // Map properties and normalize status
-        const list = (data || [])
+        let list = (data || [])
             .filter(b => !dummyIds.includes(b.booking_id))
             .map(b => {
                 let status = b.paid_status;
@@ -1054,6 +1077,8 @@ async function getBookingsFromSupabase() {
         if (!list.some(b => b.bookingId === 'S1-002-N2L')) {
             list.push(initialSeedBookings[0]);
         }
+
+        list = deduplicateBookings(list);
 
         // Keep local cache fully synchronized
         localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
