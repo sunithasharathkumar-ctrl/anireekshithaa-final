@@ -928,6 +928,8 @@ function launchUpiApp(appName) {
 /* ==========================================================================
    DATABASE CONTROLLER (LOCAL BACKUP + SUPABASE LIVE DB)
    ========================================================================== */
+const STORAGE_KEY = 'anireekshithaa_bookings_oct11_v4';
+
 const initialSeedBookings = [
     {
         bookingId: 'S1-002-N2L',
@@ -943,18 +945,33 @@ const initialSeedBookings = [
     }
 ];
 
+// Automatically purge legacy storage keys from past screenings so all devices start clean
+function purgeLegacyStorage() {
+    const legacyKeys = ['anireekshithaa_bookings', 'anireekshithaa_bookings_v2', 'anireekshithaa_bookings_v3'];
+    legacyKeys.forEach(key => {
+        try {
+            if (localStorage.getItem(key)) {
+                localStorage.removeItem(key);
+                console.log(`[Storage] Purged legacy storage key: ${key}`);
+            }
+        } catch (e) {}
+    });
+}
+purgeLegacyStorage();
+
 function getBookings() {
-    const stored = localStorage.getItem('anireekshithaa_bookings');
+    purgeLegacyStorage();
+    const stored = localStorage.getItem(STORAGE_KEY);
     let bookings = stored ? JSON.parse(stored) : null;
 
     if (!bookings || !Array.isArray(bookings) || bookings.length === 0) {
         bookings = [...initialSeedBookings];
-        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
     } else {
         const exists = bookings.some(b => b.bookingId === 'S1-002-N2L');
         if (!exists) {
             bookings.push(initialSeedBookings[0]);
-            localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
         }
     }
 
@@ -1017,7 +1034,7 @@ async function getBookingsFromSupabase() {
         }
 
         // Keep local cache fully synchronized
-        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(list));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
         console.log(`[Supabase] Successfully loaded and synchronized ${list.length} records.`);
         return list;
     } catch (err) {
@@ -1057,7 +1074,7 @@ async function saveBookingToDatabase() {
     } else {
         bookings.unshift(newBookingLocal);
     }
-    localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(bookings));
 
     // 2. Save/Upsert to Supabase Cloud if configured
     if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
@@ -1401,7 +1418,7 @@ async function approveBookingRequest(bookingId) {
     if (bookingIdx !== -1) {
         localBookings[bookingIdx].paidStatus = 'Confirmed';
         localBookings[bookingIdx].profession = updatedProfession;
-        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(localBookings));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(localBookings));
     }
 
     // 2. Non-blocking attempt to sync update to Supabase Cloud if reachable
@@ -1442,7 +1459,7 @@ async function rejectBookingRequest(bookingId) {
     const bookingIdx = localBookings.findIndex(b => b.bookingId === bookingId);
     if (bookingIdx !== -1) {
         localBookings[bookingIdx].paidStatus = 'Rejected';
-        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(localBookings));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(localBookings));
     }
 
     // 2. Non-blocking attempt to sync update to Supabase Cloud if reachable
@@ -1540,14 +1557,15 @@ async function filterAdminPendingTable() {
 }
 
 async function confirmResetDatabase() {
-    if (!confirm('Are you sure you want to delete all booking records?')) {
+    if (!confirm('Are you sure you want to reset all booking records for the October 11 screening?')) {
         return;
     }
 
     console.log('[Reset] Initiating database reset...');
 
-    // 1. Always reset local storage cache immediately
-    localStorage.setItem('anireekshithaa_bookings', JSON.stringify([]));
+    // 1. Always purge legacy keys and reset local storage cache immediately
+    purgeLegacyStorage();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([...initialSeedBookings]));
     localStorage.setItem('anireekshithaa_feedbacks', JSON.stringify([]));
 
     // 2. Perform Supabase deletion if client is configured
