@@ -743,11 +743,11 @@
                 <!-- Success Header -->
                 <div class="success-header" style="text-align: center; margin-top: 25px; margin-bottom: 15px;">
                     <div class="success-icon" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(241, 196, 15, 0.1); border: 1px solid rgba(241, 196, 15, 0.2); display: flex; align-items: center; justify-content: center; margin: 0 auto 10px auto;">
-                        <i class="fa-solid fa-clock" style="color: #f1c40f; font-size: 1.3rem;"></i>
+                        <i class="fa-solid fa-credit-card" style="color: #f1c40f; font-size: 1.3rem;"></i>
                     </div>
-                    <h3 style="color: var(--text-white); font-size: 1.3rem; font-family: 'Outfit', sans-serif; font-weight: 700; margin-bottom: 6px;">Booking Request Recorded</h3>
+                    <h3 style="color: var(--text-white); font-size: 1.3rem; font-family: 'Outfit', sans-serif; font-weight: 700; margin-bottom: 6px;">Payment & Verification</h3>
                     <p style="color: var(--text-muted); font-size: 0.82rem; line-height: 1.5; max-width: 420px; margin: 0 auto;">
-                        Please complete the payment of the amount shown in the summary below. Once paid, send us the screenshot on WhatsApp to confirm your seats.
+                        Pay using UPI or QR Code below. Once paid, click the button below to submit your booking and send your screenshot on WhatsApp.
                     </p>
                 </div>
 
@@ -757,7 +757,7 @@
                     <div style="display: flex; flex-direction: column; gap: 8px; font-size: 0.85rem; color: var(--text-light);">
                         <div style="display: flex; justify-content: space-between;">
                             <span>Booking ID:</span>
-                            <strong style="color: var(--text-white);" id="displayBookingId">-</strong>
+                            <strong style="color: var(--text-white);" id="displayBookingId">Pending Payment</strong>
                         </div>
                         <div style="display: flex; justify-content: space-between;">
                             <span>Customer Name:</span>
@@ -781,7 +781,7 @@
                         </div>
                         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px dashed rgba(255,255,255,0.08); padding-top: 8px;">
                             <span>Status:</span>
-                            <span style="font-size: 0.75rem; background: rgba(241, 196, 15, 0.1); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;" id="displayBookingStatus">Pending Verification</span>
+                            <span style="font-size: 0.75rem; background: rgba(241, 196, 15, 0.1); color: #f1c40f; border: 1px solid rgba(241, 196, 15, 0.2); padding: 3px 8px; border-radius: 4px; font-weight: bold; text-transform: uppercase;" id="displayBookingStatus">Payment Pending</span>
                         </div>
                     </div>
                 </div>
@@ -789,9 +789,9 @@
                 <!-- Action Controls Section -->
                 <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px; width: 100%;">
                     <!-- WhatsApp Screenshot Button -->
-                    <a id="sendScreenshotBtn" target="_blank" href="#" style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #25D366; color: white; border-radius: 6px; padding: 13px 20px; font-weight: 600; text-decoration: none; font-size: 0.95rem; width: 100%; text-align: center; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); transition: background-color 0.2s;">
-                        <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Send Payment Screenshot on WhatsApp
-                    </a>
+                    <button id="sendScreenshotBtn" type="button" onclick="submitBookingAndOpenWhatsApp()" style="display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #25D366; color: white; border: none; border-radius: 6px; padding: 13px 20px; font-weight: 600; cursor: pointer; font-size: 0.95rem; width: 100%; text-align: center; box-shadow: 0 4px 10px rgba(37, 211, 102, 0.2); transition: background-color 0.2s;">
+                        <i class="fa-brands fa-whatsapp" style="font-size: 1.25rem;"></i> Confirm & Send Payment Screenshot on WhatsApp
+                    </button>
 
                     <!-- Change details and Close Buttons -->
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%;">

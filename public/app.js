@@ -678,54 +678,17 @@ async function submitDetailsForm() {
         return;
     }
 
-    // Save inputs to booking state
+    // Save inputs to booking state (WITHOUT saving to DB yet)
     bookingState.attendee = { name, phone, profession, role };
-
-    // Generate Booking ID if not already generated (sequential 1 to 140 format per show)
-    if (!bookingState.bookingId) {
-        const showTimeVal = bookingState.showTime || '10:00 AM';
-        const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
-
-        let bookings = [];
-        try {
-            bookings = await getBookingsFromSupabase();
-        } catch (err) {
-            console.error("Failed to fetch fresh bookings from Supabase, using local cache:", err);
-            bookings = getBookings();
-        }
-
-        let countForShow = 0;
-        bookings.forEach(b => {
-            const parsed = parseCategory(b.category);
-            if (parsed.showTime === showTimeVal || parsed.showTime === '11:00 AM') {
-                countForShow++;
-            }
-        });
-
-        const nextNum = countForShow + 1;
-        const paddedNum = String(nextNum).padStart(3, '0');
-        const randSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
-        bookingState.bookingId = `${showPrefix}-${paddedNum}-${randSuffix}`;
-    }
-    
-    // Set status
-    bookingState.paidStatus = 'Pending Verification';
+    bookingState.paidStatus = 'Payment Pending';
     bookingState.transactionId = '-';
     bookingState.confirmed = false;
 
     const grandTotal = bookingState.tickets * bookingState.ticketPrice;
 
-    // Save booking to Database (Supabase + LocalStorage) asynchronously in background
-    console.log('[Payment Flow] Saving/updating booking to database...');
-    saveBookingToDatabase().then(() => {
-        console.log('[Payment Flow] Database save complete.');
-    }).catch(err => {
-        console.error('[Payment Flow] Database save failed:', err);
-    });
-
-    // Populate confirmation display elements
+    // Populate confirmation display elements for preview
     const displayBookingId = document.getElementById('displayBookingId');
-    if (displayBookingId) displayBookingId.textContent = bookingState.bookingId;
+    if (displayBookingId) displayBookingId.textContent = 'Pending Payment';
 
     const displayCustomerName = document.getElementById('displayCustomerName');
     if (displayCustomerName) displayCustomerName.textContent = bookingState.attendee.name;
@@ -744,7 +707,7 @@ async function submitDetailsForm() {
 
     const displayBookingStatus = document.getElementById('displayBookingStatus');
     if (displayBookingStatus) {
-        displayBookingStatus.textContent = 'Pending Verification';
+        displayBookingStatus.textContent = 'Payment Pending';
         displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
         displayBookingStatus.style.color = '#f1c40f';
     }
@@ -758,19 +721,78 @@ async function submitDetailsForm() {
     if (qrImg) {
         const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(upiDeepLink)}`;
         qrImg.setAttribute('src', qrUrl);
-        console.log('[Payment Flow] Generated QR Code URL:', qrUrl);
     }
 
-    // Configure the WhatsApp screenshot upload button
-    const sendScreenshotBtn = document.getElementById('sendScreenshotBtn');
-    if (sendScreenshotBtn) {
-        const textMsg = `Hi, I have completed the payment of ₹${grandTotal.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
-        const encodedText = encodeURIComponent(textMsg);
-        sendScreenshotBtn.setAttribute('href', `https://wa.me/919986048332?text=${encodedText}`);
-    }
-
-    // Go to step 3 (Payment & Confirmation)
+    // Go to step 3 (Payment Details)
     goToStep(3);
+}
+
+async function submitBookingAndOpenWhatsApp() {
+    if (!bookingState.attendee.name || !bookingState.attendee.phone) {
+        alert('Please fill out your details first.');
+        goToStep(2);
+        return;
+    }
+
+    const showTimeVal = bookingState.showTime || '10:00 AM';
+    const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
+
+    // Generate Booking ID on explicit payment confirmation submit
+    if (!bookingState.bookingId) {
+        let bookings = [];
+        try {
+            bookings = await getBookingsFromSupabase();
+        } catch (err) {
+            bookings = getBookings();
+        }
+
+        let countForShow = 0;
+        bookings.forEach(b => {
+            const parsed = parseCategory(b.category);
+            if (parsed.showTime === showTimeVal || parsed.showTime === '11:00 AM') {
+                countForShow++;
+            }
+        });
+
+        const nextNum = countForShow + 1;
+        const paddedNum = String(nextNum).padStart(3, '0');
+        const randSuffix = Math.random().toString(36).substring(2, 5).toUpperCase();
+        bookingState.bookingId = `${showPrefix}-${paddedNum}-${randSuffix}`;
+    }
+
+    bookingState.paidStatus = 'Pending Verification';
+    bookingState.transactionId = '-';
+    bookingState.confirmed = false;
+
+    // Update displays with official Booking ID
+    const displayBookingId = document.getElementById('displayBookingId');
+    if (displayBookingId) displayBookingId.textContent = bookingState.bookingId;
+
+    const displayBookingStatus = document.getElementById('displayBookingStatus');
+    if (displayBookingStatus) {
+        displayBookingStatus.textContent = 'Pending Verification';
+        displayBookingStatus.style.backgroundColor = 'rgba(241, 196, 15, 0.1)';
+        displayBookingStatus.style.color = '#f1c40f';
+    }
+
+    // Save booking to Database & LocalStorage now that user initiated WhatsApp payment verification
+    console.log('[Payment Flow] Saving booking to database after payment confirmation...');
+    await saveBookingToDatabase();
+    await refreshShowCapacities();
+
+    // Configure WhatsApp URL & launch
+    const grandTotal = bookingState.tickets * bookingState.ticketPrice;
+    const textMsg = `Hi, I have completed the payment of ₹${grandTotal.toFixed(2)} for ${bookingState.tickets} seat${bookingState.tickets > 1 ? 's' : ''} of Anireekshithaa. My Booking ID is *${bookingState.bookingId}*. Here is my payment screenshot for verification.`;
+    const encodedText = encodeURIComponent(textMsg);
+    const waUrl = `https://wa.me/919986048332?text=${encodedText}`;
+
+    showToast('Booking request submitted! Opening WhatsApp...');
+
+    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+        window.location.href = waUrl;
+    } else {
+        window.open(waUrl, '_blank');
+    }
 }
 
 async function copyTextToClipboard(text) {
