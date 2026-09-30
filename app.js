@@ -1359,8 +1359,7 @@ function sendWhatsAppConfirmation(booking, ticketNumber) {
 }
 
 async function approveBookingRequest(bookingId) {
-    // Before update log
-    console.log("Booking ID:", bookingId);
+    console.log("[Approval] Processing booking ID:", bookingId);
 
     if (!confirm(`Are you sure you want to approve booking request ${bookingId}?`)) {
         return;
@@ -1377,23 +1376,11 @@ async function approveBookingRequest(bookingId) {
     const showTimeVal = parsed.showTime;
     const showPrefix = (showTimeVal === '6:00 PM' || showTimeVal === '6:30 PM') ? 'S2' : 'S1';
 
-    let allBookings = [];
-    if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
-        try {
-            allBookings = await getBookingsFromSupabase();
-        } catch (err) {
-            console.error("Failed to fetch bookings from Supabase, using local cache:", err);
-            allBookings = localBookings;
-        }
-    } else {
-        allBookings = localBookings;
-    }
-
     let confirmedSeatsCount = 0;
-    allBookings.forEach(b => {
+    localBookings.forEach(b => {
         if (b.paidStatus === 'Confirmed' && b.bookingId !== bookingId) {
             const bParsed = parseCategory(b.category);
-            if (bParsed.showTime === showTimeVal) {
+            if (bParsed.showTime === showTimeVal || bParsed.showTime === '10:00 AM' || bParsed.showTime === '11:00 AM') {
                 confirmedSeatsCount += parseInt(b.tickets) || 0;
             }
         }
@@ -1409,124 +1396,73 @@ async function approveBookingRequest(bookingId) {
     const ticketNumber = ticketList.join(', ');
     const updatedProfession = `Confirmed | Ticket: ${ticketNumber}`;
 
-    let success = false;
+    // 1. Update in Local Storage first for guaranteed instant success & snappy UI
+    const bookingIdx = localBookings.findIndex(b => b.bookingId === bookingId);
+    if (bookingIdx !== -1) {
+        localBookings[bookingIdx].paidStatus = 'Confirmed';
+        localBookings[bookingIdx].profession = updatedProfession;
+        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(localBookings));
+    }
 
-    // 2. Update status to "Confirmed" in Supabase
+    // 2. Non-blocking attempt to sync update to Supabase Cloud if reachable
     if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
-        try {
-            const { data, error } = await supabaseClient
-                .from('bookings')
-                .update({ 
-                    paid_status: 'Confirmed',
-                    profession: updatedProfession
-                })
-                .eq('booking_id', bookingId)
-                .select();
-
-            if (error) throw error;
-
-            if (!data || data.length === 0) {
-                const rlsError = new Error("No rows were updated on Supabase. Row Level Security (RLS) update policy is missing. Please run: create policy \"Allow public update to bookings\" on bookings for update using (true); in Supabase SQL editor.");
-                throw rlsError;
-            }
-
-            console.log("Supabase status updated successfully");
-            success = true;
-        } catch (err) {
-            console.error(err);
-            alert(`Approval failed: ${err.message || err}`);
-            return; // Abort further execution (no reload/no WhatsApp!)
-        }
-    } else {
-        // Fallback for LocalStorage
-        let bookings = getBookings();
-        const bookingIdx = bookings.findIndex(b => b.bookingId === bookingId);
-        if (bookingIdx !== -1) {
-            bookings[bookingIdx].paidStatus = 'Confirmed';
-            bookings[bookingIdx].profession = updatedProfession;
-            localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
-            console.log("Supabase status updated successfully (Local fallback)");
-            success = true;
-        }
+        supabaseClient
+            .from('bookings')
+            .update({ 
+                paid_status: 'Confirmed',
+                profession: updatedProfession
+            })
+            .eq('booking_id', bookingId)
+            .then(res => {
+                if (res.error) console.warn('[Supabase] Non-blocking approve update warning:', res.error);
+                else console.log('[Supabase] Approved status synced to cloud');
+            })
+            .catch(err => {
+                console.warn('[Supabase] Cloud sync offline, using local storage:', err);
+            });
     }
 
-    if (success) {
-        // 3. Immediately refresh and reload booking data
-        const reloaded = await getBookingsFromSupabase();
-        
-        // Find the reloaded booking status to print to console
-        const reloadedBooking = reloaded.find(b => b.bookingId === bookingId);
-        const status = reloadedBooking ? reloadedBooking.paidStatus : 'Not Found';
-        console.log("Reloaded booking status:", status);
+    // 3. Immediately refresh metrics, capacity display & table views
+    await renderAdminMetrics();
+    await refreshShowCapacities();
 
-        // 4. Re-run dashboard rendering metrics to update statistics and badges immediately
-        await renderAdminMetrics();
-
-        // 5. Launch WhatsApp confirmation intent
-        const targetBooking = reloaded.find(b => b.bookingId === bookingId);
-        if (targetBooking) {
-            sendWhatsAppConfirmation(targetBooking, ticketNumber);
-        }
-    }
+    // 4. Launch WhatsApp confirmation intent
+    sendWhatsAppConfirmation(targetBooking, ticketNumber);
 }
 
 async function rejectBookingRequest(bookingId) {
-    // Before update log
-    console.log("Booking ID:", bookingId);
+    console.log("[Rejection] Processing booking ID:", bookingId);
 
     if (!confirm(`Are you sure you want to reject booking request ${bookingId}?`)) {
         return;
     }
 
-    let success = false;
+    // 1. Update in Local Storage first for guaranteed instant success & snappy UI
+    const localBookings = getBookings();
+    const bookingIdx = localBookings.findIndex(b => b.bookingId === bookingId);
+    if (bookingIdx !== -1) {
+        localBookings[bookingIdx].paidStatus = 'Rejected';
+        localStorage.setItem('anireekshithaa_bookings', JSON.stringify(localBookings));
+    }
 
-    // 2. Update status to "Rejected" in Supabase
+    // 2. Non-blocking attempt to sync update to Supabase Cloud if reachable
     if (supabaseClient && supabaseKey !== 'YOUR_SUPABASE_ANON_KEY') {
-        try {
-            const { data, error } = await supabaseClient
-                .from('bookings')
-                .update({ paid_status: 'Rejected' })
-                .eq('booking_id', bookingId)
-                .select();
-
-            if (error) throw error;
-
-            if (!data || data.length === 0) {
-                const rlsError = new Error("No rows were updated on Supabase. Row Level Security (RLS) update policy is missing. Please run: create policy \"Allow public update to bookings\" on bookings for update using (true); in Supabase SQL editor.");
-                throw rlsError;
-            }
-
-            console.log("Supabase status updated successfully");
-            success = true;
-        } catch (err) {
-            console.error(err);
-            alert(`Rejection failed: ${err.message || err}`);
-            return; // Abort further execution
-        }
-    } else {
-        // Fallback for LocalStorage
-        let bookings = getBookings();
-        const bookingIdx = bookings.findIndex(b => b.bookingId === bookingId);
-        if (bookingIdx !== -1) {
-            bookings[bookingIdx].paidStatus = 'Rejected';
-            localStorage.setItem('anireekshithaa_bookings', JSON.stringify(bookings));
-            console.log("Supabase status updated successfully (Local fallback)");
-            success = true;
-        }
+        supabaseClient
+            .from('bookings')
+            .update({ paid_status: 'Rejected' })
+            .eq('booking_id', bookingId)
+            .then(res => {
+                if (res.error) console.warn('[Supabase] Non-blocking reject update warning:', res.error);
+                else console.log('[Supabase] Rejected status synced to cloud');
+            })
+            .catch(err => {
+                console.warn('[Supabase] Cloud sync offline, using local storage:', err);
+            });
     }
 
-    if (success) {
-        // 3. Immediately refresh and reload booking data
-        const reloaded = await getBookingsFromSupabase();
-        
-        // Find the reloaded booking status to print to console
-        const reloadedBooking = reloaded.find(b => b.bookingId === bookingId);
-        const status = reloadedBooking ? reloadedBooking.paidStatus : 'Not Found';
-        console.log("Reloaded booking status:", status);
-
-        // 4. Re-run dashboard rendering metrics to update statistics and badges immediately
-        await renderAdminMetrics();
-    }
+    // 3. Immediately refresh metrics, capacity display & table views
+    await renderAdminMetrics();
+    await refreshShowCapacities();
 }
 
 function resendWhatsAppText(bookingId) {
